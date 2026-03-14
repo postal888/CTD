@@ -16,9 +16,13 @@ cd "$APP_DIR"
 python3 -m venv venv
 ./venv/bin/pip install -q -r "$BACKEND_DIR/requirements.txt"
 
-echo "=== .env from example ==="
-cp "$BACKEND_DIR/.env.example" "$BACKEND_DIR/.env"
-echo "Edit $BACKEND_DIR/.env: set OPENAI_API_KEY=sk-... (and optionally FUNDS_RAG_URL=http://127.0.0.1:8100 if running funds-rag)"
+echo "=== .env from example (only if missing) ==="
+if [ ! -f "$BACKEND_DIR/.env" ]; then
+  cp "$BACKEND_DIR/.env.example" "$BACKEND_DIR/.env"
+  echo "Edit $BACKEND_DIR/.env: set OPENAI_API_KEY=sk-... (and optionally FUNDS_RAG_URL=http://127.0.0.1:8100 if running funds-rag)"
+else
+  echo "Keeping existing .env (OPENAI_API_KEY etc. unchanged)"
+fi
 
 echo "=== Nginx ==="
 sudo sed "s/YOUR_DOMAIN_OR_IP/$DOMAIN/g" "$APP_DIR/deploy/nginx-crackthedeck.conf" | sudo tee /etc/nginx/sites-available/crackthedeck > /dev/null
