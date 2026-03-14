@@ -1,0 +1,44 @@
+# Environment and secrets
+.env
+.env.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Backend uploads and reports
+crackthedeck-backend/crackthedeck-backend/presentations/
+crackthedeck-backend/crackthedeck-backend/reports/
+crackthedeck-backend/crackthedeck-backend/uploads/
+crackthedeck-backend/crackthedeck-backend/poppler-25.12.0/
+crackthedeck-backend/crackthedeck-backend/poppler.zip
+
+# Funds data (large JSONL/CSV — optional, uncomment if you don't want to track)
+# Funds/
+# funds-rag-service/funds-rag-service/data/
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+/tmp/
+
+# Cache and archives (don't commit)
+crackthedeck-backend/crackthedeck-backend/deals_cache.json
+*.zip
+presentations/

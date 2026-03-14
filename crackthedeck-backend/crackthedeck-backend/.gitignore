@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.env
+uploads/
+presentations/
+reports/
+/tmp/fonts/
+*.egg-info/
+dist/
+build/
+.venv/
+poppler.zip

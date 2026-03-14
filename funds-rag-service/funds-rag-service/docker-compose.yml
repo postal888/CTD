@@ -1,0 +1,47 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    hostname: db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rag}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-funds_rag}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5434:5432"   # local only (5434 — если 5433 занят)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rag}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ragnet
+
+  rag:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      # Данные фондов: почищенный JSONL в папке Funds (монтируется ниже)
+      FUNDS_JSONL_PATH: /app/funds_data/funds_clean.jsonl
+    ports:
+      - "127.0.0.1:8100:8100"   # local only — crackthedeck обращается через nginx
+    volumes:
+      - ./data:/app/data
+      # Папка с данными фондов. По умолчанию ../../Funds; на Windows задай FUNDS_HOST_PATH (см. .env.example).
+      - ${FUNDS_HOST_PATH:-../../Funds}:/app/funds_data
+    networks:
+      - ragnet
+
+networks:
+  ragnet:
+    driver: bridge
+
+volumes:
+  pgdata:

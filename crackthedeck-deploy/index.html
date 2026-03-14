@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrackTheDeck — Professional Investor Review for Pitch Decks</title>
+<meta name="description" content="Professional investor review for your pitch deck. Trained on 1,000+ real decks. Score 78/100, red flags, slide-by-slide feedback. 40+ deals worth $5B+.">
+<meta property="og:title" content="CrackTheDeck — Crack the Deck">
+<meta property="og:description" content="Professional investor review for your pitch deck. Score, red flags, and IC simulation.">
+<meta property="og:type" content="website">
+
+<!-- Fonts: Inter Tight (display) + Inter (body) from Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<!-- Skip Link -->
+<a href="#main" class="sr-only" style="position:absolute;top:0;left:0;z-index:999;padding:1rem;background:var(--color-primary);color:#fff;">Skip to content</a>
+
+<!-- Header -->
+<header class="header" id="header">
+  <div class="header__inner">
+    <a href="#" class="logo" aria-label="CrackTheDeck Home">
+      <svg class="logo__icon" width="36" height="36" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M16 2L26 16L16 30" fill="url(#logo-grad)" opacity="0.9"/>
+        <path d="M16 2L6 16L16 30" fill="url(#logo-grad)" opacity="0.5"/>
+        <path d="M16 8L22 16L16 24" fill="white" opacity="0.15"/>
+        <defs>
+          <linearGradient id="logo-grad" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#00E5C3"/>
+            <stop offset="1" stop-color="#00E676"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="logo__text">CrackTheDeck</span>
+    </a>
+    <nav class="header__nav" aria-label="Main navigation">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="./blog.html">Blog</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="header__actions">
+      <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="btn btn--outline btn--sm" onclick="openFundsModal()">Find matching funds</button>
+      <button class="btn btn--cta btn--sm" onclick="openUploadModal()">Upload Deck</button>
+    </div>
+    <button class="mobile-menu-btn" aria-label="Open menu" onclick="toggleMobileMenu()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <nav>
+      <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
+      <a href="#features" onclick="closeMobileMenu()">Features</a>
+      <a href="#pricing" onclick="closeMobileMenu()">Pricing</a>
+      <a href="./blog.html" onclick="closeMobileMenu()">Blog</a>
+      <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+      <button class="btn btn--outline" style="width:100%;margin-top:0.5rem" onclick="openFundsModal();closeMobileMenu()">Find matching funds</button>
+      <button class="btn btn--cta" style="width:100%;margin-top:1rem" onclick="openUploadModal();closeMobileMenu()">Upload Deck</button>
+    </nav>
+  </div>
+</header>
+
+<div class="deals-ticker" id="dealsTicker">
+  <div class="deals-ticker__track" aria-live="polite">
+    <span class="deals-ticker__item">Loading deals…</span>
+  </div>
+</div>
+
+<main id="main">
+
+<!-- ===== SECTION 1: HERO ===== -->
+<section class="hero dot-grid" id="hero">
+  <div class="hero__content">
+    <h1 class="hero__title fade-in">Crack the Deck</h1>
+    <p class="hero__subtitle fade-in">Professional investor review for your pitch deck. Trained on&nbsp;1,000+&nbsp;real&nbsp;decks. Score&nbsp;78/100, red&nbsp;flags, slide-by-slide feedback&nbsp;&&nbsp;IC&nbsp;simulation.</p>
+    <button class="btn btn--cta btn--lg btn--bounce" onclick="openUploadModal()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload My Deck
+    </button>
+    <p class="hero__turnaround fade-in">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Results delivered within 24 hours
+    </p>
+    <div class="hero__stats fade-in">
+      <div class="stat">
+        <span class="stat__number">40+</span>
+        <span class="stat__label">deals worth $5B+</span>
+      </div>
+      <div class="stat">
+        <span class="stat__number">10+</span>
+        <span class="stat__label">countries</span>
+      </div>
+      <div class="stat">
+        <span class="stat__number">20+</span>
+        <span class="stat__label">board seats</span>
+      </div>
+      <div class="stat">
+        <span class="stat__number">1,000+</span>
+        <span class="stat__label">decks analyzed</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero__pitch-matters fade-in">
+    <div class="pitch-matters">
+      <h2 class="pitch-matters__title">Your deck gets 3 minutes. Make them count.</h2>
+      <div class="pitch-matters__grid">
+        <div class="pitch-matters__point">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-cta-start)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <strong>No second chances.</strong>
+            <p>Investors see 1,000+ decks a year. A weak first impression means a permanent pass. You won't get a follow-up if slide 3 loses them.</p>
+          </div>
+        </div>
+        <div class="pitch-matters__point">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <div>
+            <strong>The difference is in the details.</strong>
+            <p>Unit economics that don't add up, a missing TAM slide, inconsistent metrics — these silent killers reject 70% of decks before the founder even gets a call.</p>
+          </div>
+        </div>
+        <div class="pitch-matters__point">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div>
+            <strong>Get the insider's perspective.</strong>
+            <p>We review your deck the way an investment committee does — not as consultants, but as the people who actually write the checks and ask the hard questions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero__visual fade-in">
+    <img src="./assets/hero-founder.png" alt="Cartoon founder cracking open a golden pitch deck lock with a lightbulb moment" width="640" height="360" loading="eager">
+  </div>
+</section>
+
+<div class="gradient-line"></div>
+
+<!-- ===== VC LOGO MARQUEE ===== -->
+<section class="logo-marquee" aria-label="Trusted by top-tier investors">
+  <div class="logo-marquee__track">
+    <div class="logo-marquee__slide">
+      <span class="logo-marquee__item">Sequoia Capital</span>
+      <span class="logo-marquee__item">Andreessen Horowitz</span>
+      <span class="logo-marquee__item">Accel</span>
+      <span class="logo-marquee__item">Benchmark</span>
+      <span class="logo-marquee__item">Lightspeed</span>
+      <span class="logo-marquee__item">Founders Fund</span>
+      <span class="logo-marquee__item">Greylock</span>
+      <span class="logo-marquee__item">Index Ventures</span>
+      <span class="logo-marquee__item">GGV Capital</span>
+      <span class="logo-marquee__item">Bessemer</span>
+      <span class="logo-marquee__item">NEA</span>
+      <span class="logo-marquee__item">Kleiner Perkins</span>
+    </div>
+    <div class="logo-marquee__slide" aria-hidden="true">
+      <span class="logo-marquee__item">Sequoia Capital</span>
+      <span class="logo-marquee__item">Andreessen Horowitz</span>
+      <span class="logo-marquee__item">Accel</span>
+      <span class="logo-marquee__item">Benchmark</span>
+      <span class="logo-marquee__item">Lightspeed</span>
+      <span class="logo-marquee__item">Founders Fund</span>
+      <span class="logo-marquee__item">Greylock</span>
+      <span class="logo-marquee__item">Index Ventures</span>
+      <span class="logo-marquee__item">GGV Capital</span>
+      <span class="logo-marquee__item">Bessemer</span>
+      <span class="logo-marquee__item">NEA</span>
+      <span class="logo-marquee__item">Kleiner Perkins</span>
+    </div>
+  </div>
+  <p class="logo-marquee__caption">Our reviewers have worked with portfolio companies of these firms</p>
+</section>
+
+<div class="gradient-line"></div>
+
+<!-- ===== SECTION 2: HOW IT WORKS ===== -->
+<section class="section how-it-works" id="how-it-works">
+  <div class="section__inner">
+    <h2 class="section__title fade-in">How It Works</h2>
+    <div class="steps">
+      <div class="step fade-in">
+        <div class="step__number">1</div>
+        <div class="step__icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+        </div>
+        <h3>Upload PDF / PPTX</h3>
+        <p>Drag and drop your pitch deck. We support PDF and PowerPoint.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step__number">2</div>
+        <div class="step__icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h3>AI Score + Red Flags</h3>
+        <p>Our AI analyzes narrative, market, traction, financials, and design.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step__number">3</div>
+        <div class="step__icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h3>CIO Feedback + Quick Wins</h3>
+        <p>Get actionable slide-by-slide feedback and instant improvements.</p>
+      </div>
+    </div>
+    <div class="how-it-works__visual fade-in">
+      <img src="./assets/how-it-works.png" alt="3-step process: upload PDF, AI lightning analysis, checklist with green checks" width="800" height="450" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<div class="gradient-line"></div>
+
+<!-- ===== SECTION 3: SCORECARD PREVIEW ===== -->
+<section class="section scorecard" id="scorecard">
+  <div class="section__inner">
+    <h2 class="section__title fade-in">Scorecard Preview</h2>
+    <div class="scorecard__demo fade-in">
+      <div class="scorecard__card">
+        <div class="scorecard__header">
+          <h3>Your Pitch Deck Score</h3>
+          <span class="scorecard__badge">Demo</span>
+        </div>
+        <div class="scorecard__metrics">
+          <div class="metric">
+            <div class="metric__label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Narrative
+            </div>
+            <div class="metric__bar"><div class="metric__fill" style="--fill: 78%" data-score="78"></div></div>
+            <span class="metric__score">78/100</span>
+          </div>
+          <div class="metric">
+            <div class="metric__label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Market
+            </div>
+            <div class="metric__bar"><div class="metric__fill metric__fill--high" style="--fill: 85%" data-score="85"></div></div>
+            <span class="metric__score">85/100</span>
+          </div>
+          <div class="metric">
+            <div class="metric__label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              Traction
+            </div>
+            <div class="metric__bar"><div class="metric__fill metric__fill--high" style="--fill: 92%" data-score="92"></div></div>
+            <span class="metric__score">92/100</span>
+          </div>
+          <div class="metric">
+            <div class="metric__label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Financials
+            </div>
+            <div class="metric__bar"><div class="metric__fill metric__fill--warn" style="--fill: 65%" data-score="65"></div></div>
+            <span class="metric__score metric__score--warn">65/100 &#9888;</span>
+          </div>
+          <div class="metric">
+            <div class="metric__label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+              Design
+            </div>
+            <div class="metric__bar"><div class="metric__fill metric__fill--high" style="--fill: 81%" data-score="81"></div></div>
+            <span class="metric__score">81/100</span>
+          </div>
+        </div>
+        <div class="scorecard__flags">
+          <div class="flag flag--red">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>
+              <strong>Red Flags (3)</strong>
+              <p>Unit economics don't add up on Slide 4</p>
+            </div>
+          </div>
+          <div class="flag flag--green">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <div>
+              <strong>Quick Wins (5)</strong>
+              <p>Slide 7: add CAC/LTV breakdown chart</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scorecard__visual">
+        <img src="./assets/scorecard-mockup.png" alt="Scorecard mockup showing five progress bars with cartoon icons" width="600" height="450" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-line"></div>
+
+<!-- ===== SECTION 4: FEATURES ===== -->
+<section class="section features" id="features">
+  <div class="section__inner">
+    <h2 class="section__title fade-in">Features</h2>
+    <div class="features__grid">
+      <div class="feature-card fade-in">
+        <div class="feature-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        </div>
+        <h3>AI Scoring</h3>
+        <p>5-parameter analysis: narrative, market, traction, financials, design</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </div>
+        <h3>Slide-by-Slide</h3>
+        <p>Detailed feedback on each slide with actionable suggestions</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M6 8l4 4-4 4"/><line x1="14" y1="16" x2="18" y2="16"/></svg>
+        </div>
+        <h3>Financial Check</h3>
+        <p>Model validation, unit economics review, and projections audit</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <h3>Red Flags + Quick Wins</h3>
+        <p>Critical issues flagged instantly with priority fixes</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-card__icon feature-card__icon--pro">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-cta-start)" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Human Review <span class="badge">Pro</span></h3>
+        <p>Expert investor feedback on narrative, structure, and positioning</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-card__icon feature-card__icon--pro">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-cta-start)" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h3>Deep-Dive Report <span class="badge badge--expert">Expert</span></h3>
+        <p>Comprehensive written feedback with IC simulation and financial model review</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-line"></div>
+
+<!-- ===== SECTION 5: PRICING ===== -->
+<section class="section pricing" id="pricing">
+  <div class="section__inner">
+    <h2 class="section__title fade-in">Pricing</h2>
+    <div class="pricing__grid">
+      <div class="pricing-card fade-in">
+        <div class="pricing-card__header">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <h3>Free</h3>
+        </div>
+        <div class="pricing-card__price">
+          <span class="pricing-card__amount">$0</span>
+          <span class="pricing-card__period">/ deck</span>
+        </div>
+        <ul class="pricing-card__features" role="list">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> AI Score (5 parameters)</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Red Flags report</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-faint)" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> <span class="pricing-card__disabled">Full slide feedback</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-faint)" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> <span class="pricing-card__disabled">Human review</span></li>
+        </ul>
+        <button class="btn btn--outline" onclick="openUploadModal()">Get Started</button>
+      </div>
+
+      <div class="pricing-card pricing-card--featured fade-in">
+        <div class="pricing-card__popular">Most Popular</div>
+        <div class="pricing-card__header">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>
+          <h3>Pro</h3>
+        </div>
+        <div class="pricing-card__price">
+          <span class="pricing-card__amount">$49</span>
+          <span class="pricing-card__period">/ deck</span>
+        </div>
+        <ul class="pricing-card__features" role="list">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Everything in Free</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Full slide-by-slide feedback</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Human investor review</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Quick wins priority list</li>
+        </ul>
+        <button class="btn btn--cta" onclick="openUploadModal()">Choose Pro</button>
+      </div>
+
+      <div class="pricing-card fade-in">
+        <div class="pricing-card__header">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+          <h3>Expert</h3>
+        </div>
+        <div class="pricing-card__price">
+          <span class="pricing-card__amount">$499</span>
+          <span class="pricing-card__period">/ deck</span>
+        </div>
+        <ul class="pricing-card__features" role="list">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Everything in Pro</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> In-depth written report</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> IC simulation + financial deep-dive</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Detailed human investor review with feedback</li>
+          <li class="pricing-card__guarantee">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            100% money-back guarantee
+          </li>
+        </ul>
+        <button class="btn btn--outline" onclick="openUploadModal()">Choose Expert</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<div class="gradient-line"></div>
+
+<!-- ===== VC QUOTES ===== -->
+<section class="section vc-quotes" id="vc-quotes">
+  <div class="section__inner">
+    <h2 class="section__title fade-in">What Top Investors Say</h2>
+    <div class="vc-quotes__grid">
+      <blockquote class="vc-quote fade-in">
+        <p>"Anything that shows a lack of conviction or courage in what you're doing is what always ends up worrying me. Either you believe it or you don't."</p>
+        <footer>
+          <strong>Ben Horowitz</strong>
+          <span>Co-Founder, Andreessen Horowitz</span>
+        </footer>
+      </blockquote>
+      <blockquote class="vc-quote fade-in">
+        <p>"Most investors decide in the first few minutes whether you seem like a winner or a loser, and once their opinion is set it's hard to change."</p>
+        <footer>
+          <strong>Paul Graham</strong>
+          <span>Co-Founder, Y Combinator</span>
+        </footer>
+      </blockquote>
+      <blockquote class="vc-quote fade-in">
+        <p>"It wasn't really the slides we liked — it was their ideas, the clarity of their thinking, and the scope of their ambition."</p>
+        <footer>
+          <strong>Sequoia Capital</strong>
+          <span>Writing a Business Plan</span>
+        </footer>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-line"></div>
+
+<!-- ===== FAQ ===== -->
+<section class="section faq" id="faq">
+  <div class="section__inner">
+    <h2 class="section__title fade-in">FAQ</h2>
+    <div class="faq__list">
+      <details class="faq__item fade-in">
+        <summary>How is this different from free AI tools like ChatGPT?</summary>
+        <p>Generic AI tools don't understand investor psychology, IC dynamics, or what makes VCs say "yes." Our system is trained on 1,000+ real pitch decks and calibrated by reviewers who have sat on investment committees, led due diligence, and closed 40+ deals worth $5B+. The AI scoring is just the starting point — the real value is the human investor perspective you can't get anywhere else.</p>
+      </details>
+      <details class="faq__item fade-in">
+        <summary>How long does a review take?</summary>
+        <p>You'll receive your results within 24 hours. Free tier (AI scoring) is instant. Pro and Expert reviews are completed by our team and delivered via email.</p>
+      </details>
+      <details class="faq__item fade-in">
+        <summary>Who reviews my deck?</summary>
+        <p>Your deck is reviewed by professionals with direct investment experience — people who have evaluated hundreds of startups, served on boards, and participated in investment committee decisions across 10+ countries.</p>
+      </details>
+      <details class="faq__item fade-in">
+        <summary>What file formats do you accept?</summary>
+        <p>We accept PDF and PowerPoint (.pptx) files up to 50MB. For best results, upload the version you plan to send to investors.</p>
+      </details>
+      <details class="faq__item fade-in">
+        <summary>Is my deck confidential?</summary>
+        <p>Absolutely. We treat every deck as confidential. Your materials are never shared, used for training, or shown to third parties. We can sign an NDA upon request for Expert tier clients.</p>
+      </details>
+      <details class="faq__item fade-in">
+        <summary>What's included in the Expert money-back guarantee?</summary>
+        <p>If you're not satisfied with your Expert review, we'll refund 100% of your payment — no questions asked. We're confident in the value we deliver.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-line"></div>
+
+<!-- ===== SECTION 7: CTA FOOTER ===== -->
+<section class="section cta-footer" id="cta-footer">
+  <div class="section__inner cta-footer__inner">
+    <h2 class="cta-footer__title fade-in">Ready to crack your deck?</h2>
+    <div class="cta-footer__actions fade-in">
+      <button class="btn btn--outline btn--lg" onclick="openFundsModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Find matching funds
+      </button>
+      <button class="btn btn--cta btn--lg btn--bounce" onclick="openUploadModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload My Deck
+      </button>
+      <form class="newsletter" onsubmit="handleNewsletter(event)">
+        <input type="email" placeholder="your@email.com" class="newsletter__input" required aria-label="Email for newsletter">
+        <button type="submit" class="btn btn--outline btn--sm">Subscribe</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer__inner">
+    <p>&copy; 2026 CrackTheDeck. All rights reserved.</p>
+    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" class="footer__attribution">Created with Perplexity Computer</a>
+  </div>
+</footer>
+
+<!-- ===== UPLOAD MODAL (3 steps) ===== -->
+<dialog class="modal modal--steps" id="uploadModal">
+  <div class="modal__backdrop" onclick="closeUploadModal()"></div>
+  <div class="modal__content">
+    <button class="modal__close" onclick="closeUploadModal()" aria-label="Close modal">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <!-- Progress bar -->
+    <div class="modal__progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="3">
+      <div class="modal__progress-track">
+        <div class="modal__progress-fill" id="modalProgressFill"></div>
+      </div>
+      <div class="modal__progress-labels">
+        <span class="modal__progress-label">Upload</span>
+        <span class="modal__progress-label">Plan</span>
+        <span class="modal__progress-label">Done</span>
+      </div>
+    </div>
+    <p class="modal__error" id="modalError" role="alert" hidden></p>
+
+    <!-- Step 1: Upload + Info -->
+    <div class="modal__step" id="modalStep1" data-step="1">
+      <div class="dropzone" id="dropzone">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p class="dropzone__text">Drag & drop your deck here</p>
+        <p class="dropzone__subtext">PDF or PPTX, up to 50MB</p>
+        <button type="button" class="btn btn--outline btn--sm" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+        <input type="file" id="fileInput" accept=".pdf,.pptx,.ppt" hidden onchange="handleFileSelect(this)">
+      </div>
+      <div class="modal__fields">
+        <div class="modal__field-row">
+          <input type="text" id="modalCompany" placeholder="Company name" class="modal__field-input">
+          <select id="modalStage" class="modal__field-input">
+            <option value="" disabled selected>Stage</option>
+            <option value="pre-seed">Pre-Seed</option>
+            <option value="seed">Seed</option>
+            <option value="series-a">Series A</option>
+            <option value="series-b">Series B+</option>
+            <option value="growth">Growth</option>
+          </select>
+        </div>
+        <div class="modal__field-row">
+          <input type="email" id="modalEmail" placeholder="your@email.com" class="modal__field-input">
+        </div>
+        <button type="button" class="btn btn--cta btn--block" id="btnNext" onclick="goToStep(2)">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Choose Plan -->
+    <div class="modal__step" id="modalStep2" data-step="2" hidden>
+      <h3 class="modal__step-title">Choose your plan</h3>
+      <div class="modal__plans">
+        <button type="button" class="modal-plan-card" data-plan="free" onclick="selectPlan('free')">
+          <span class="modal-plan-card__name">Free</span>
+          <span class="modal-plan-card__price">$0</span>
+          <span class="modal-plan-card__period">/ deck</span>
+          <ul class="modal-plan-card__features" role="list">
+            <li>AI Score + Red Flags</li>
+          </ul>
+        </button>
+        <button type="button" class="modal-plan-card modal-plan-card--featured" data-plan="pro" onclick="selectPlan('pro')">
+          <span class="modal-plan-card__badge">Popular</span>
+          <span class="modal-plan-card__name">Pro</span>
+          <span class="modal-plan-card__price">$49</span>
+          <span class="modal-plan-card__period">/ deck</span>
+          <ul class="modal-plan-card__features" role="list">
+            <li>Everything in Free</li>
+            <li>Slide-by-slide + Human review</li>
+          </ul>
+        </button>
+        <button type="button" class="modal-plan-card" data-plan="expert" onclick="selectPlan('expert')">
+          <span class="modal-plan-card__name">Expert</span>
+          <span class="modal-plan-card__price">$499</span>
+          <span class="modal-plan-card__period">/ deck</span>
+          <ul class="modal-plan-card__features" role="list">
+            <li>Everything in Pro</li>
+            <li>Deep-dive + IC simulation</li>
+          </ul>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Done -->
+    <div class="modal__step modal__step--center" id="modalStep3" data-step="3" hidden>
+      <div class="success-anim">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h3 class="modal__step-title">You're all set</h3>
+      <p class="modal__done-text" id="doneSummary">Plan: <strong id="donePlan">—</strong>. Report will be sent to <strong id="doneEmail">—</strong>.</p>
+      <button type="button" class="btn btn--cta btn--block" id="submitBtn" onclick="submitUpload()">Analyze my deck</button>
+      <button type="button" class="btn btn--outline btn--block" onclick="closeUploadModal()">Close</button>
+    </div>
+
+    <!-- Success state (after API) -->
+    <div class="modal__success" id="modalSuccess" hidden>
+      <div class="success-anim">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h3>Analysis complete!</h3>
+      <p id="successMessage">Your report is ready.</p>
+      <a id="successDownload" href="#" target="_blank" rel="noopener" class="btn btn--cta" style="display:inline-block;text-decoration:none;margin-bottom:0.5rem">Download PDF report</a>
+      <button class="btn btn--outline" onclick="closeUploadModal()">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ===== FIND MATCHING FUNDS MODAL ===== -->
+<dialog class="modal modal--funds funds-modal--form" id="fundsModal">
+  <div class="modal__backdrop" onclick="closeFundsModal()"></div>
+  <div class="modal__content modal__content--funds">
+    <button class="modal__close" onclick="closeFundsModal()" aria-label="Close modal">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="fundsFormSection" class="funds-form-section">
+    <h3 class="modal__title">Find matching funds</h3>
+    <p class="modal__subtitle">Upload your pitch deck for automatic matching, or enter your startup profile manually.</p>
+
+    <div class="funds-upload" id="fundsUploadZone" onclick="document.getElementById('fundsDeckFile').click()">
+      <input type="file" id="fundsDeckFile" accept=".pdf,.pptx" hidden>
+      <svg class="funds-upload__icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <p class="funds-upload__text">Drag & drop your deck here</p>
+      <p class="funds-upload__subtext">PDF or PPTX · we'll analyze and match investors</p>
+      <button type="button" class="btn btn--outline btn--sm" id="fundsDeckSubmitBtn" onclick="event.stopPropagation(); submitMatchFundsFromDeck()">Analyze deck & match</button>
+    </div>
+    <p class="funds-form-divider">— or enter manually —</p>
+
+    <div id="fundsFormWrap">
+      <div class="modal__fields">
+        <div class="modal__field-row">
+          <input type="text" id="fundsCompany" placeholder="Company name" class="modal__field-input">
+          <select id="fundsSector" class="modal__field-input">
+            <option value="" disabled selected>Sector / Industry</option>
+            <option value="fintech">Fintech</option>
+            <option value="healthtech">Healthtech</option>
+            <option value="edtech">Edtech</option>
+            <option value="SaaS">SaaS</option>
+            <option value="marketplace">Marketplace</option>
+            <option value="AI/ML">AI / ML</option>
+            <option value="climate">Climate / Green</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="modal__field-row">
+          <select id="fundsStage" class="modal__field-input">
+            <option value="" disabled selected>Stage</option>
+            <option value="pre-seed">Pre-Seed</option>
+            <option value="seed">Seed</option>
+            <option value="series-a">Series A</option>
+            <option value="series-b">Series B</option>
+            <option value="growth">Growth</option>
+          </select>
+          <input type="text" id="fundsRaise" placeholder="Target raise (e.g. $2M)" class="modal__field-input">
+        </div>
+        <div class="modal__field-row">
+          <select id="fundsGeography" class="modal__field-input">
+            <option value="">Any / All countries</option>
+            <!-- Options loaded from API when modal opens -->
+          </select>
+        </div>
+        <div class="modal__field-row">
+          <textarea id="fundsDescription" placeholder="Short description of your startup (optional)" class="modal__field-input modal__field-textarea" rows="2"></textarea>
+        </div>
+        <button type="button" class="btn btn--cta btn--block" id="fundsSubmitBtn" onclick="submitMatchFunds()">Find matching funds</button>
+      </div>
+    </div>
+
+    <p class="modal__error" id="fundsError" role="alert" hidden></p>
+    <div id="fundsLoading" class="funds-loading" hidden>
+      <span class="funds-loading__spinner"></span>
+      <span id="fundsLoadingText">Matching funds…</span>
+    </div>
+    </div>
+    <div id="fundsResults" class="funds-results" hidden>
+      <div id="fundsProfileFromDeck" class="funds-results__profile" hidden style="margin-bottom:1rem; padding:0.75rem; background:var(--surface-2, #f0f0f0); border-radius:6px; font-size:0.9rem;"></div>
+      <p class="funds-results__summary" id="fundsSummary"></p>
+      <div class="funds-results__list" id="fundsList"></div>
+      <button type="button" class="btn btn--outline btn--sm" style="margin-top:1rem" onclick="document.getElementById('fundsResults').hidden=true; var s=document.getElementById('fundsFormSection'); if(s) s.hidden=false; var w=document.getElementById('fundsFormWrap'); if(w) w.hidden=false; document.getElementById('fundsModal').classList.add('funds-modal--form')">Search again</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="./app.js"></script>
+</body>
+</html>
