@@ -1,6 +1,7 @@
 """File upload handling: PPTX→PDF conversion, PDF→images."""
 
 import logging
+import re
 import subprocess
 import uuid
 import base64
@@ -13,11 +14,21 @@ from config import UPLOAD_DIR, POPPLER_DIR, LIBREOFFICE_CMD
 logger = logging.getLogger(__name__)
 
 
+def _safe_filename(filename: str) -> str:
+    """Keep only safe ASCII for path (avoid poppler/OS issues with Cyrillic etc)."""
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else "pdf"
+    if ext not in ("pdf", "pptx"):
+        ext = "pdf"
+    # strip to alphanumeric and dash/underscore only for base name
+    base = re.subn(r"[^\w\-]", "_", filename.rsplit(".", 1)[0])[0][:80] or "deck"
+    return f"{base}.{ext}"
+
+
 async def save_upload(file_bytes: bytes, filename: str) -> tuple[str, Path]:
     """Save uploaded file to presentations folder, return (report_id, file_path)."""
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     report_id = uuid.uuid4().hex[:12]
-    safe_name = f"{report_id}_{filename}"
+    safe_name = f"{report_id}_{_safe_filename(filename)}"
     file_path = (UPLOAD_DIR / safe_name).resolve()
     file_path.write_bytes(file_bytes)
     logger.info(f"Saved to presentations: {file_path} ({len(file_bytes)} bytes)")
@@ -49,12 +60,13 @@ def convert_pptx_to_pdf(pptx_path: Path) -> Path:
     return pdf_path
 
 
-def pdf_to_images(pdf_path: Path, dpi: int = 200) -> list[str]:
+def pdf_to_images(pdf_path: Path, dpi: int = 120) -> list[str]:
     """Convert PDF pages to base64-encoded PNG images.
 
+    Uses 120 DPI by default to reduce memory (1GB servers OOM at 200 DPI with 25+ slides).
     Returns list of base64 strings for GPT-4o vision API.
     """
-    logger.info(f"Converting PDF to images: {pdf_path}")
+    logger.info(f"Converting PDF to images: {pdf_path} (dpi={dpi})")
     poppler_kw = {"poppler_path": str(POPPLER_DIR)} if POPPLER_DIR.exists() else {}
     images = convert_from_path(str(pdf_path), dpi=dpi, **poppler_kw)
 
@@ -65,6 +77,7 @@ def pdf_to_images(pdf_path: Path, dpi: int = 200) -> list[str]:
         img.save(buffer, format="PNG")
         b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
         base64_images.append(b64)
+        del img  # free PIL Image before next
 
     logger.info(f"Converted {len(base64_images)} pages to images")
     return base64_images

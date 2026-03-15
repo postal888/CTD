@@ -55,14 +55,24 @@ chmod +x deploy/server-setup.sh
 ```
 
 ### 4. Задай API-ключ OpenAI и перезапусти бэкенд
+
+**Вариант А — общий .env в папке проекта (CTD / crackthedeck)** — файл `/var/www/crackthedeck/.env` (рекомендуется):
+```bash
+sudo nano /var/www/crackthedeck/.env
+```
+Добавь строку (подставь свой ключ):
+```
+OPENAI_API_KEY=sk-proj-...
+```
+Сохрани (Ctrl+O, Enter, Ctrl+X). Этот файл переопределяет переменные из папки бэкенда.
+
+**Вариант Б — только в папке бэкенда:**
 ```bash
 nano /var/www/crackthedeck/crackthedeck-backend/crackthedeck-backend/.env
 ```
-В файле пропиши (подставь свой ключ):
-```
-OPENAI_API_KEY=sk-...
-```
-Сохрани (Ctrl+O, Enter, Ctrl+X), затем:
+В файле пропиши `OPENAI_API_KEY=sk-...`, сохрани.
+
+Затем в обоих случаях:
 ```bash
 sudo systemctl restart crackthedeck-backend
 sudo systemctl status crackthedeck-backend
@@ -76,7 +86,7 @@ sudo systemctl status crackthedeck-backend
 
 ## Обновление (код с GitHub, .env не трогаем)
 
-Подключись к серверу и выполни (существующий `.env` с OPENAI_API_KEY сохранится):
+Подключись к серверу и выполни (существующие `.env` в корне и в бэкенде не трогаются):
 
 ```bash
 ssh root@165.22.212.230
@@ -94,7 +104,36 @@ ssh root@165.22.212.230 "cd /var/www/crackthedeck && git fetch origin && git res
 
 ---
 
-## (Опционально) HTTPS и Find matching funds
+## HTTPS (сертификат, чтобы не было «небезопасно»)
 
-- **HTTPS**: `sudo apt install certbot python3-certbot-nginx` и `sudo certbot --nginx -d твой-домен.ru` (если на этот IP привязан домен).
-- **Find matching funds**: см. раздел 10 в [DEPLOY.md](DEPLOY.md) — установка Docker и funds-rag на этом же сервере.
+Сертификат можно получить только для **домена**, не для IP. Нужно:
+
+1. **Привязать домен к серверу:** в DNS у регистратора создать A-запись для своего домена (например `crackthedeck.com`) на IP `165.22.212.230`.
+2. **Дождаться обновления DNS** (от нескольких минут до часа).
+3. **На сервере** запустить скрипт (подставь свой домен и при желании email):
+
+```bash
+ssh root@165.22.212.230
+cd /var/www/crackthedeck
+chmod +x deploy/setup-https.sh
+./deploy/setup-https.sh твой-домен.ru
+# или с email (без интерактива): ./deploy/setup-https.sh твой-домен.ru you@email.com
+```
+
+Скрипт установит certbot, подставит домен в Nginx, получит сертификат Let's Encrypt и включит редирект HTTP → HTTPS. После этого открывай сайт по **https://твой-домен.ru**.
+
+**Вручную (без скрипта):**
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo sed -i 's/server_name .*/server_name твой-домен.ru _;/' /etc/nginx/sites-available/crackthedeck
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot --nginx -d твой-домен.ru --redirect
+```
+
+Сертификат обновляется автоматически (certbot ставит таймер). Если домена нет, для IP бесплатный «зелёный» сертификат недоступен — браузер будет показывать «небезопасно» при доступе по IP.
+
+---
+
+## (Опционально) Find matching funds
+
+См. раздел 10 в [DEPLOY.md](DEPLOY.md) — установка Docker и funds-rag на этом же сервере.

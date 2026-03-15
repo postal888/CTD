@@ -206,7 +206,10 @@ async function submitUpload() {
     var res = await fetch(API_BASE + '/api/analyze', { method: 'POST', body: form });
     var data = await res.json().catch(function () { return {}; });
     if (!res.ok) {
-      throw new Error(data.detail || data.message || res.statusText || 'Upload failed');
+      var detail = data.detail;
+      if (Array.isArray(detail) && detail[0] && detail[0].msg) detail = detail[0].msg;
+      else if (typeof detail !== 'string') detail = detail ? String(detail) : '';
+      throw new Error(detail || data.message || (res.status + ' ' + res.statusText) || 'Upload failed');
     }
     document.getElementById('modalStep1').hidden = true;
     document.getElementById('modalStep2').hidden = true;
@@ -555,9 +558,6 @@ async function submitMatchFunds() {
   } catch (err) {
     if (loading) loading.hidden = true;
     var msg = err.message || 'Something went wrong. Try again.';
-    if (msg.indexOf('temporarily unavailable') !== -1 || msg.indexOf('not running') !== -1) {
-      msg = 'Fund matching service is not running. Start Docker Desktop, then in PowerShell run: cd E:\\GIT\\CTD\\funds-rag-service\\funds-rag-service && docker compose up -d && docker compose exec rag python -m scripts.index_funds --jsonl /app/funds_data/funds_clean.jsonl';
-    }
     showFundsError(msg);
     if (formWrap) formWrap.hidden = false;
     if (results) results.hidden = true;

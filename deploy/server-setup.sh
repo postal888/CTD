@@ -47,5 +47,5 @@ sudo systemctl status crackthedeck-backend --no-pager || true
 curl -s http://127.0.0.1:8000/api/health || echo "Backend not ready (set OPENAI_API_KEY in .env and: sudo systemctl restart crackthedeck-backend)"
 echo ""
 echo "Done. Site: http://$DOMAIN"
-echo "Set OPENAI_API_KEY in $BACKEND_DIR/.env then: sudo systemctl restart crackthedeck-backend"
+echo "Set OPENAI_API_KEY in $BACKEND_DIR/.env or in $APP_DIR/.env (project CTD/crackthedeck .env overrides), then: sudo systemctl restart crackthedeck-backend"
 echo "Optional: to enable Find matching funds, run funds-rag (Docker) and set FUNDS_RAG_URL=http://127.0.0.1:8100 in .env"

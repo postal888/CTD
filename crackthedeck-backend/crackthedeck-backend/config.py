@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 
 # Paths (needed to load .env from project dir regardless of cwd)
 BASE_DIR = Path(__file__).parent
-# .env next to config.py; override=True so file wins over shell env
-load_dotenv(BASE_DIR / ".env", override=True)
+# .env next to config.py; override=False so systemd/env (e.g. root .env) wins over file
+load_dotenv(BASE_DIR / ".env", override=False)
 # Uploaded pitch decks (PDF/PPTX) — always use absolute path
 UPLOAD_DIR = (BASE_DIR / "presentations").resolve()
 REPORTS_DIR = (BASE_DIR / "reports").resolve()

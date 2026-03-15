@@ -1,6 +1,7 @@
 """Deals feed API — TechCrunch RSS filtered by GPT, cached 24h."""
 
 import json
+import logging
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -10,7 +11,11 @@ from openai import OpenAI
 
 import config
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/deals", tags=["deals"])
+
+# User-Agent for RSS fetch (some hosts block default feedparser)
+FEED_USER_AGENT = "Mozilla/5.0 (compatible; CrackTheDeck/1.0; +https://github.com/postal888/CTD)"
 
 # Cache: refresh at most once per day
 CACHE_PATH = config.BASE_DIR / "deals_cache.json"
@@ -90,13 +95,13 @@ def _save_cache(deals: list, source: str):
 def _fetch_feed_entries() -> list[dict]:
     entries = []
     try:
-        feed = feedparser.parse(TECHCRUNCH_FUNDING_FEED)
+        feed = feedparser.parse(TECHCRUNCH_FUNDING_FEED, agent=FEED_USER_AGENT)
         entries = getattr(feed, "entries", []) or []
         if not entries:
-            feed = feedparser.parse(TECHCRUNCH_MAIN_FEED)
+            feed = feedparser.parse(TECHCRUNCH_MAIN_FEED, agent=FEED_USER_AGENT)
             entries = getattr(feed, "entries", []) or []
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Deals feed fetch failed: %s", e)
     return entries
 
 
@@ -115,11 +120,13 @@ def _entries_to_text(entries: list[dict], max_items: int = 80) -> str:
 def _filter_deals_with_gpt(entries: list[dict]) -> tuple[list[dict], str]:
     """Send headlines to GPT, return (list of deals in our API format, source)."""
     if not entries:
+        logger.warning("Deals: no feed entries to filter")
         return [], "TechCrunch RSS"
     text = _entries_to_text(entries)
     if not text:
         return [], "TechCrunch RSS"
     if not config.OPENAI_API_KEY:
+        logger.warning("Deals: OPENAI_API_KEY not set, cannot filter with GPT")
         return [], "TechCrunch RSS"
     client = OpenAI(api_key=config.OPENAI_API_KEY)
     try:
@@ -136,7 +143,8 @@ def _filter_deals_with_gpt(entries: list[dict]) -> tuple[list[dict], str]:
         raw = response.choices[0].message.content
         data = json.loads(raw)
         deals_in = data.get("deals") or []
-    except Exception:
+    except Exception as e:
+        logger.warning("Deals GPT filter failed: %s", e, exc_info=True)
         return [], "TechCrunch RSS"
     # Normalize to API format: company, amount, round, ticker, date, url, headline
     deals = []
@@ -175,9 +183,11 @@ def get_latest_deals(limit: int = Query(20, ge=1, le=50)):
         }
     entries = _fetch_feed_entries()
     if not entries:
+        logger.warning("Deals: feed returned no entries, using fallback")
         return {"deals": _FALLBACK_DEALS, "total": len(_FALLBACK_DEALS), "source": "TechCrunch RSS"}
     deals, source = _filter_deals_with_gpt(entries)
     if not deals:
+        logger.warning("Deals: GPT returned no deals, using fallback")
         return {"deals": _FALLBACK_DEALS, "total": len(_FALLBACK_DEALS), "source": source}
     _save_cache(deals, source)
     return {"deals": deals[:limit], "total": len(deals), "source": source}

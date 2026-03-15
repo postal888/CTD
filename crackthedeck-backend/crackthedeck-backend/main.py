@@ -121,12 +121,18 @@ async def analyze(
     slide_count = get_slide_count(pdf_path)
     logger.info(f"Deck has {slide_count} slides")
 
-    # Convert PDF → images
+    # Convert PDF → images (120 DPI to limit memory on small servers)
     try:
         base64_images = pdf_to_images(pdf_path)
     except Exception as e:
         logger.error(f"PDF to images failed: {e}")
         raise HTTPException(500, f"Failed to process PDF: {e}")
+
+    # Cap slides sent to GPT to avoid OOM (e.g. 1GB server); report still uses full slide_count
+    max_slides = 25
+    if len(base64_images) > max_slides:
+        logger.info(f"Capping analysis to first {max_slides} of {len(base64_images)} slides (memory)")
+        base64_images = base64_images[:max_slides]
 
     # Analyze with GPT-4o
     try:
@@ -222,12 +228,7 @@ async def match_funds(body: MatchFundsRequest):
         logger.warning(f"Funds RAG unreachable: {e}")
         raise HTTPException(
             status_code=503,
-            detail=(
-                "Fund matching service is not running. "
-                "Locally: start Docker Desktop, then in folder funds-rag-service run "
-                "'docker compose up -d' and 'docker compose exec rag python -m scripts.index_funds --jsonl /app/funds_data/funds_clean.jsonl'. "
-                "On server: ensure the RAG service is deployed and FUNDS_RAG_URL is set."
-            ),
+            detail="Fund matching is temporarily unavailable. Please try again later.",
         )
     except httpx.HTTPStatusError as e:
         logger.warning(f"Funds RAG error: {e.response.status_code} {e.response.text}")
@@ -364,7 +365,7 @@ async def match_funds_from_deck(file: UploadFile = File(...)):
             r.raise_for_status()
             match_data = r.json()
     except httpx.ConnectError:
-        raise HTTPException(503, "Fund matching service is not running. Start the RAG service (see docs).")
+        raise HTTPException(503, "Fund matching is temporarily unavailable. Please try again later.")
     except httpx.HTTPStatusError as e:
         raise HTTPException(min(e.response.status_code, 502), (e.response.text or "RAG error")[:500])
     except httpx.TimeoutException:
