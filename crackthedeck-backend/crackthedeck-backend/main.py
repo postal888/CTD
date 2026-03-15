@@ -129,10 +129,6 @@ async def analyze(
         raise HTTPException(500, f"Failed to process PDF: {e}")
 
     # Cap slides sent to GPT to avoid OOM (e.g. 1GB server); report still uses full slide_count
-    max_slides = 25
-    if len(base64_images) > max_slides:
-        logger.info(f"Capping analysis to first {max_slides} of {len(base64_images)} slides (memory)")
-        base64_images = base64_images[:max_slides]
 
     # Analyze with GPT-4o
     try:

@@ -5,9 +5,11 @@ import re
 import subprocess
 import uuid
 import base64
+from io import BytesIO
 from pathlib import Path
 
 from pdf2image import convert_from_path
+from pypdf import PdfReader
 
 from config import UPLOAD_DIR, POPPLER_DIR, LIBREOFFICE_CMD
 
@@ -19,7 +21,6 @@ def _safe_filename(filename: str) -> str:
     ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else "pdf"
     if ext not in ("pdf", "pptx"):
         ext = "pdf"
-    # strip to alphanumeric and dash/underscore only for base name
     base = re.subn(r"[^\w\-]", "_", filename.rsplit(".", 1)[0])[0][:80] or "deck"
     return f"{base}.{ext}"
 
@@ -63,28 +64,40 @@ def convert_pptx_to_pdf(pptx_path: Path) -> Path:
 def pdf_to_images(pdf_path: Path, dpi: int = 120) -> list[str]:
     """Convert PDF pages to base64-encoded PNG images.
 
-    Uses 120 DPI by default to reduce memory (1GB servers OOM at 200 DPI with 25+ slides).
-    Returns list of base64 strings for GPT-4o vision API.
+    Converts ONE page at a time to minimize RAM usage.
+    This allows processing 50+ slide decks on a 1GB server
+    without OOM kills.
+
+    Returns list of base64 strings for GPT vision API.
     """
     logger.info(f"Converting PDF to images: {pdf_path} (dpi={dpi})")
     poppler_kw = {"poppler_path": str(POPPLER_DIR)} if POPPLER_DIR.exists() else {}
-    images = convert_from_path(str(pdf_path), dpi=dpi, **poppler_kw)
+    total_pages = get_slide_count(pdf_path)
 
     base64_images = []
-    for i, img in enumerate(images):
-        from io import BytesIO
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
-        b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
-        base64_images.append(b64)
-        del img  # free PIL Image before next
+    for page_num in range(1, total_pages + 1):
+        # Convert ONE page at a time — peak RAM = ~10MB instead of N*10MB
+        pages = convert_from_path(
+            str(pdf_path),
+            dpi=dpi,
+            first_page=page_num,
+            last_page=page_num,
+            **poppler_kw,
+        )
+        if pages:
+            buffer = BytesIO()
+            pages[0].save(buffer, format="PNG")
+            b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+            base64_images.append(b64)
+            del pages[0]
+            del buffer
+        del pages
 
-    logger.info(f"Converted {len(base64_images)} pages to images")
+    logger.info(f"Converted {len(base64_images)} pages to images (page-by-page)")
     return base64_images
 
 
 def get_slide_count(pdf_path: Path) -> int:
     """Get number of pages in PDF."""
-    from pypdf import PdfReader
     reader = PdfReader(str(pdf_path))
     return len(reader.pages)

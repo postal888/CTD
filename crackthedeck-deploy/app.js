@@ -592,10 +592,8 @@ function handleNewsletter(e) {
   }
 }
 
-/* --- IntersectionObserver Fade-in (fallback for browsers without scroll-timeline) --- */
+/* --- IntersectionObserver Fade-in (universal — works on all browsers) --- */
 (function () {
-  if (CSS.supports && CSS.supports('animation-timeline', 'scroll()')) return;
-
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -606,7 +604,8 @@ function handleNewsletter(e) {
   }, { threshold: 0.1 });
 
   document.querySelectorAll('.fade-in').forEach(el => {
-    el.style.opacity = '0';
+    // CSS class controls opacity:0 — no inline styles that could conflict
+    el.classList.add('fade-in--ready');
     observer.observe(el);
   });
 })();

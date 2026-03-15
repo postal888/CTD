@@ -256,8 +256,12 @@ def _investor_cover(c: canvas.Canvas, data: dict):
 
 
 def _investor_analysis_pages(c: canvas.Canvas, data: dict):
-    """Draw investment analysis — criteria cards across multiple pages."""
+    """Draw investment analysis — criteria cards across 1 or 2 pages."""
     criteria = data.get("criteria", [])
+
+    # Page header + score box + metrics strip take up the top portion
+    # We'll render the score box on the first page, then criteria below
+    # If criteria don't fit, overflow to a second page
 
     _bg(c)
 
@@ -273,14 +277,14 @@ def _investor_analysis_pages(c: canvas.Canvas, data: dict):
 
     # Score box
     score = data.get("overall_score", 0)
-    box_y = H - 185
+    box_y = H - 175
     c.setFillColor(SURFACE)
-    c.roundRect(MARGIN, box_y, 200, 125, 8, fill=1, stroke=0)
+    c.roundRect(MARGIN, box_y, 200, 115, 8, fill=1, stroke=0)
 
     # Score arc
     arc_cx = MARGIN + 80
-    arc_cy = box_y + 65
-    arc_r = 42
+    arc_cy = box_y + 60
+    arc_r = 40
     c.setStrokeColor(HexColor("#2A2A3E"))
     c.setLineWidth(8)
     c.arc(arc_cx - arc_r, arc_cy - arc_r, arc_cx + arc_r, arc_cy + arc_r, 0, 360)
@@ -288,39 +292,39 @@ def _investor_analysis_pages(c: canvas.Canvas, data: dict):
     c.setLineWidth(8)
     c.arc(arc_cx - arc_r, arc_cy - arc_r, arc_cx + arc_r, arc_cy + arc_r, 90, -score / 100 * 360)
 
-    c.setFont(get_font("body-bold"), 36)
+    c.setFont(get_font("body-bold"), 32)
     c.setFillColor(WHITE)
-    c.drawCentredString(arc_cx, arc_cy - 12, str(score))
-    c.setFont(get_font("body"), 14)
+    c.drawCentredString(arc_cx, arc_cy - 10, str(score))
+    c.setFont(get_font("body"), 12)
     c.setFillColor(MUTED)
-    c.drawCentredString(arc_cx, arc_cy - 30, "/100")
+    c.drawCentredString(arc_cx, arc_cy - 28, "/100")
 
-    c.setFont(get_font("heading-regular"), 9)
+    c.setFont(get_font("heading-regular"), 8)
     c.setFillColor(CYAN)
-    c.drawCentredString(arc_cx, box_y + 118, "OVERALL SCORE")
+    c.drawCentredString(arc_cx, box_y + 108, "OVERALL SCORE")
 
     # Label + summary with full word-wrap
     summary_x = MARGIN + 220
     summary_box_w = INNER_W - 220
     c.setFillColor(SURFACE)
-    c.roundRect(summary_x, box_y, summary_box_w, 125, 8, fill=1, stroke=0)
+    c.roundRect(summary_x, box_y, summary_box_w, 115, 8, fill=1, stroke=0)
 
-    c.setFont(get_font("heading"), 16)
+    c.setFont(get_font("heading"), 14)
     c.setFillColor(GREEN)
-    c.drawString(summary_x + 15, box_y + 96, data.get("overall_label", ""))
+    c.drawString(summary_x + 15, box_y + 88, data.get("overall_label", ""))
 
-    # Word-wrapped summary — up to 5 lines at 11pt
+    # Word-wrapped summary — up to 5 lines
     summary_text = data.get("overall_summary", "")
     font_name = get_font("body")
-    summary_lines = _wrap_text(c, summary_text, font_name, 11, summary_box_w - 40, max_lines=5)
-    c.setFont(font_name, 11)
+    summary_lines = _wrap_text(c, summary_text, font_name, 10, summary_box_w - 40, max_lines=5)
+    c.setFont(font_name, 10)
     c.setFillColor(WHITE)
     for i, ln in enumerate(summary_lines):
-        c.drawString(summary_x + 15, box_y + 72 - i * 15, ln)
+        c.drawString(summary_x + 15, box_y + 65 - i * 14, ln)
 
-    # Deal metrics strip — with padding above and below
-    metrics_y = box_y - 20
-    c.setFont(get_font("heading-regular"), 9)
+    # Deal metrics strip
+    metrics_y = box_y - 5
+    c.setFont(get_font("heading-regular"), 8)
     c.setFillColor(MUTED)
     strip_parts = [
         f"TARGET: {data.get('target_raise', 'N/A')}",
@@ -331,51 +335,34 @@ def _investor_analysis_pages(c: canvas.Canvas, data: dict):
     strip_text = "  |  ".join(strip_parts)
     c.drawCentredString(W / 2, metrics_y, strip_text)
 
-    # ── Criteria cards — dynamic height, full text, overflow to pages ──
+    # ── Criteria cards with word-wrapped comments ──
+    # Each card: name + score + bar + 2 lines of comment
     card_w = (INNER_W - 20) / 2
-    comment_font_size = 9
-    comment_line_h = 12
-    card_header_h = 32  # space for name + score + bar
-    card_pad_bottom = 10  # padding below last line
-    card_gap = 8  # vertical gap between card rows
+    card_h = 76  # Increased from 62 to accommodate 2 lines of comment
+    comment_font_size = 7
+    comment_line_h = 10
+    max_comment_lines = 2
 
-    start_y = metrics_y - 22
+    start_y = metrics_y - 20
     min_y = 45  # don't go below footer
 
-    # Pre-compute comment lines with a reasonable cap (6 lines at 9pt ~ 2-3 sentences)
-    max_comment_lines = 6
-    comment_font = get_font("body")
-    comment_max_w = card_w - 24
-    all_comment_lines = []
-    for crit in criteria[:10]:
-        comment = crit.get("comment", "")
-        lines = _wrap_text(c, comment, comment_font, comment_font_size,
-                           comment_max_w, max_lines=max_comment_lines)
-        all_comment_lines.append(lines)
+    page_num = 1
+    card_idx = 0
 
-    # Build pairs (rows of 2 cards)
-    pairs = []
-    for idx in range(0, len(criteria[:10]), 2):
-        left = idx
-        right = idx + 1 if idx + 1 < len(criteria[:10]) else None
-        pairs.append((left, right))
+    for i, crit in enumerate(criteria[:10]):
+        col = card_idx % 2
+        row = card_idx // 2
+        x = MARGIN + col * (card_w + 20)
+        y = start_y - row * (card_h + 6)
 
-    cursor_y = start_y
-
-    for pair_idx, (li, ri) in enumerate(pairs):
-        # Determine row height = max of both cards
-        left_lines = len(all_comment_lines[li])
-        right_lines = len(all_comment_lines[ri]) if ri is not None else 0
-        max_lines = max(left_lines, right_lines, 1)
-        row_card_h = card_header_h + max_lines * comment_line_h + card_pad_bottom
-
-        # Check if row fits on current page
-        if cursor_y - row_card_h < min_y:
+        # Check if card would go below footer — start new page
+        if y - card_h + 10 < min_y and col == 0:
             _footer(c, "Investor Report")
             c.showPage()
             _bg(c)
+            page_num += 1
 
-            # Continuation header
+            # Mini header on continuation page
             c.setFont(get_font("heading"), 16)
             c.setFillColor(GREEN)
             c.drawString(MARGIN, H - 45,
@@ -384,48 +371,49 @@ def _investor_analysis_pages(c: canvas.Canvas, data: dict):
             c.setLineWidth(1)
             c.line(MARGIN, H - 52, W - MARGIN, H - 52)
 
-            cursor_y = H - 72
+            start_y = H - 72
+            card_idx = 0
+            col = 0
+            row = 0
+            x = MARGIN + col * (card_w + 20)
+            y = start_y - row * (card_h + 6)
 
-        # Draw the pair of cards
-        for side, ci in enumerate([li, ri]):
-            if ci is None:
-                continue
-            crit = criteria[ci]
-            x = MARGIN + side * (card_w + 20)
-            y = cursor_y
+        # Card background
+        c.setFillColor(SURFACE)
+        c.roundRect(x, y - card_h + 10, card_w, card_h, 5, fill=1, stroke=0)
 
-            # Card background
-            c.setFillColor(SURFACE)
-            c.roundRect(x, y - row_card_h, card_w, row_card_h, 5, fill=1, stroke=0)
+        sc = crit.get("score", 0)
+        color = _score_color(sc)
 
-            sc = crit.get("score", 0)
-            color = _score_color(sc)
+        # Name
+        c.setFont(get_font("body-semi"), 10)
+        c.setFillColor(CYAN)
+        c.drawString(x + 10, y - 5, crit.get("name", ""))
 
-            # Name
-            c.setFont(get_font("body-semi"), 12)
-            c.setFillColor(CYAN)
-            c.drawString(x + 12, y - 15, crit.get("name", ""))
+        # Score
+        c.setFont(get_font("body-bold"), 12)
+        c.setFillColor(color)
+        c.drawRightString(x + card_w - 10, y - 5, f"{sc}/10")
 
-            # Score
-            c.setFont(get_font("body-bold"), 14)
-            c.setFillColor(color)
-            c.drawRightString(x + card_w - 12, y - 15, f"{sc}/10")
+        # Progress bar
+        bar_y = y - 20
+        bar_w = card_w - 20
+        c.setFillColor(HexColor("#2A2A3E"))
+        c.roundRect(x + 10, bar_y, bar_w, 5, 2, fill=1, stroke=0)
+        c.setFillColor(color)
+        c.roundRect(x + 10, bar_y, bar_w * sc / 10, 5, 2, fill=1, stroke=0)
 
-            # Progress bar
-            bar_y = y - 30
-            bar_w = card_w - 24
-            c.setFillColor(HexColor("#2A2A3E"))
-            c.roundRect(x + 12, bar_y, bar_w, 6, 2, fill=1, stroke=0)
-            c.setFillColor(color)
-            c.roundRect(x + 12, bar_y, bar_w * sc / 10, 6, 2, fill=1, stroke=0)
+        # Comment — word-wrapped, up to 2 lines
+        comment = crit.get("comment", "")
+        comment_max_w = card_w - 20
+        comment_lines = _wrap_text(c, comment, get_font("body"), comment_font_size,
+                                   comment_max_w, max_lines=max_comment_lines)
+        c.setFont(get_font("body"), comment_font_size)
+        c.setFillColor(MUTED)
+        for j, cl in enumerate(comment_lines):
+            c.drawString(x + 10, bar_y - 14 - j * comment_line_h, cl)
 
-            # Comment — all lines, no truncation
-            c.setFont(comment_font, comment_font_size)
-            c.setFillColor(MUTED)
-            for j, cl in enumerate(all_comment_lines[ci]):
-                c.drawString(x + 12, bar_y - 16 - j * comment_line_h, cl)
-
-        cursor_y -= row_card_h + card_gap
+        card_idx += 1
 
     _footer(c, "Investor Report")
     c.showPage()
@@ -466,44 +454,32 @@ def _investor_metrics(c: canvas.Canvas, data: dict):
     c.setLineWidth(1)
     c.roundRect(x, 40, col_w, y_start - 30, 8, fill=0, stroke=1)
 
-    c.setFont(get_font("heading-regular"), 11)
+    c.setFont(get_font("heading-regular"), 10)
     c.setFillColor(CYAN)
     c.drawString(x + 15, y_start - 15, "KEY METRICS")
 
     y = y_start - 40
-    value_max_w = col_w - 30
     for label, value in metrics_items:
         if value:
-            c.setFont(get_font("body"), 9)
+            c.setFont(get_font("body"), 8)
             c.setFillColor(MUTED)
             c.drawString(x + 15, y, label)
-            # Try 16pt first; if text is too wide, shrink to 12pt
-            val_str = str(value)
-            val_font = get_font("body-bold")
-            val_size = 16
-            if c.stringWidth(val_str, val_font, val_size) > value_max_w:
-                val_size = 12
-            if c.stringWidth(val_str, val_font, val_size) > value_max_w:
-                val_size = 10
-            c.setFont(val_font, val_size)
+            c.setFont(get_font("body-bold"), 14)
             c.setFillColor(WHITE)
-            c.drawString(x + 15, y - 20, val_str)
-            y -= 55
-            # Stop if we'd overflow below footer
-            if y - 55 < 40:
-                break
+            c.drawString(x + 15, y - 18, str(value))
+            y -= 52
 
     # Right column: Strengths + Risks
     rx = MARGIN + col_w + 25
     rw = INNER_W - col_w - 25
     min_bottom = 40  # don't go below footer
-    available_h = y_start - 5 - min_bottom
+    available_h = y_start - 5 - min_bottom  # total available height for both boxes + gap
 
-    # Start with 9pt font, allow more lines
-    font_size = 9
-    line_spacing = 14
-    item_pad = 6
-    max_lines_per_item = 4
+    # Try fitting with normal font (8pt), then shrink if needed
+    font_size = 8
+    line_spacing = 13
+    item_pad = 5
+    max_lines_per_item = 3
 
     def _calc_boxes(fs, ls, ip, ml):
         """Calculate wrapped lines and box heights for strengths+risks."""
@@ -512,7 +488,7 @@ def _investor_metrics(c: canvas.Canvas, data: dict):
             text = f"{i + 1}. {s}"
             lines = _wrap_text(c, text, get_font("body"), fs, rw - 30, max_lines=ml)
             sw.append(lines)
-        s_h = 32
+        s_h = 30
         for lines in sw:
             s_h += len(lines) * ls + ip
         s_h = max(s_h, 50)
@@ -522,7 +498,7 @@ def _investor_metrics(c: canvas.Canvas, data: dict):
             text = f"{i + 1}. {r}"
             lines = _wrap_text(c, text, get_font("body"), fs, rw - 30, max_lines=ml)
             rw_list.append(lines)
-        r_h = 32
+        r_h = 30
         for lines in rw_list:
             r_h += len(lines) * ls + ip
         r_h = max(r_h, 50)
@@ -533,14 +509,14 @@ def _investor_metrics(c: canvas.Canvas, data: dict):
 
     # If both boxes + 15px gap don't fit, try smaller font
     if sh + rh + 15 > available_h:
-        font_size = 8
-        line_spacing = 12
-        item_pad = 5
+        font_size = 7
+        line_spacing = 11
+        item_pad = 4
         strength_wrapped, sh, risk_wrapped, rh = _calc_boxes(font_size, line_spacing, item_pad, max_lines_per_item)
 
     # If still doesn't fit, reduce max_lines
     if sh + rh + 15 > available_h:
-        max_lines_per_item = 3
+        max_lines_per_item = 2
         strength_wrapped, sh, risk_wrapped, rh = _calc_boxes(font_size, line_spacing, item_pad, max_lines_per_item)
 
     sy = y_start - 5
@@ -550,7 +526,7 @@ def _investor_metrics(c: canvas.Canvas, data: dict):
     c.setLineWidth(1)
     c.roundRect(rx, sy - sh, rw, sh, 8, fill=0, stroke=1)
 
-    c.setFont(get_font("heading-regular"), 11)
+    c.setFont(get_font("heading-regular"), 10)
     c.setFillColor(GREEN)
     c.drawString(rx + 15, sy - 18, "INVESTMENT STRENGTHS")
 
@@ -570,7 +546,7 @@ def _investor_metrics(c: canvas.Canvas, data: dict):
     c.setLineWidth(1)
     c.roundRect(rx, ry - rh, rw, rh, 8, fill=0, stroke=1)
 
-    c.setFont(get_font("heading-regular"), 11)
+    c.setFont(get_font("heading-regular"), 10)
     c.setFillColor(RED)
     c.drawString(rx + 15, ry - 18, "INVESTMENT RISKS")
 
@@ -670,7 +646,7 @@ def _startup_checklist(c: canvas.Canvas, data: dict):
 
     # Table header
     y = H - 72
-    c.setFont(get_font("heading-regular"), 9)
+    c.setFont(get_font("heading-regular"), 8)
     c.setFillColor(MUTED)
     c.drawString(MARGIN + 10, y, "ELEMENT")
     c.drawString(MARGIN + 310, y, "STATUS")
@@ -680,9 +656,9 @@ def _startup_checklist(c: canvas.Canvas, data: dict):
     checklist = data.get("checklist", [])
     notes_col_w = INNER_W - 380
     notes_font = get_font("body")
-    notes_font_size = 8.5
-    notes_line_h = 12
-    base_row_h = 16  # minimum row height for single-line
+    notes_font_size = 7.5
+    notes_line_h = 11
+    base_row_h = 14  # minimum row height for single-line
 
     status_colors = {
         "strong": GREEN,
@@ -709,7 +685,7 @@ def _startup_checklist(c: canvas.Canvas, data: dict):
             c.rect(MARGIN, ry - row_h + 14, INNER_W, row_h, fill=1, stroke=0)
 
         # Element name
-        c.setFont(get_font("body-semi"), 10)
+        c.setFont(get_font("body-semi"), 9)
         c.setFillColor(WHITE)
         c.drawString(MARGIN + 10, ry + 5, item.get("element", ""))
 
@@ -730,7 +706,7 @@ def _startup_checklist(c: canvas.Canvas, data: dict):
     # Summary line
     summary = data.get("checklist_summary", {})
     sy = y - 10
-    c.setFont(get_font("body-bold"), 11)
+    c.setFont(get_font("body-bold"), 10)
     c.setFillColor(WHITE)
     total = summary.get("total", 14)
     strong = summary.get("strong", 0)
@@ -767,7 +743,7 @@ def _startup_checklist(c: canvas.Canvas, data: dict):
     for label, color in legend_items:
         c.setFillColor(color)
         c.circle(lx + 4, legend_y + 3, 4, fill=1, stroke=0)
-        c.setFont(get_font("body"), 8)
+        c.setFont(get_font("body"), 7)
         c.setFillColor(MUTED)
         c.drawString(lx + 12, legend_y, label)
         lx += 80
@@ -798,11 +774,11 @@ def _startup_readiness(c: canvas.Canvas, data: dict):
 
     # Summary — word-wrapped, up to 4 lines
     summary = fr.get("summary", "")
-    sum_lines = _wrap_text(c, summary, get_font("body"), 11, 350, max_lines=4)
-    c.setFont(get_font("body"), 11)
+    sum_lines = _wrap_text(c, summary, get_font("body"), 10, 350, max_lines=4)
+    c.setFont(get_font("body"), 10)
     c.setFillColor(WHITE)
     for i, ln in enumerate(sum_lines):
-        c.drawString(MARGIN, H - 120 - i * 15, ln)
+        c.drawString(MARGIN, H - 120 - i * 14, ln)
 
     # Three arc charts
     arc_y = H - 105
@@ -834,8 +810,8 @@ def _startup_readiness(c: canvas.Canvas, data: dict):
     iy = issues_y - 28
     issue_desc_x = MARGIN + 28 + 55 + 10  # after badge
     issue_desc_w = INNER_W - (28 + 55 + 10)  # remaining width
-    issue_font_size = 9.5
-    issue_line_h = 13
+    issue_font_size = 8.5
+    issue_line_h = 12
 
     for issue in issues[:10]:
         rank = issue.get("rank", 0)
@@ -847,7 +823,7 @@ def _startup_readiness(c: canvas.Canvas, data: dict):
         desc_lines = _wrap_text(c, desc, get_font("body"), issue_font_size,
                                 issue_desc_w, max_lines=3)
         num_lines = max(len(desc_lines), 1)
-        item_h = max(30, num_lines * issue_line_h + 10)
+        item_h = max(28, num_lines * issue_line_h + 8)
 
         # Check if we'd go below footer
         if iy - item_h < 40:
@@ -865,19 +841,19 @@ def _startup_readiness(c: canvas.Canvas, data: dict):
             iy = H - 80
 
         # Rank number
-        c.setFont(get_font("body-semi"), 11)
+        c.setFont(get_font("body-semi"), 10)
         c.setFillColor(WHITE)
         c.drawRightString(MARGIN + 20, iy, f"{rank}.")
 
         # Severity badge
         badge_w = 55
-        badge_h = 16
+        badge_h = 14
         bx = MARGIN + 28
         c.setFillColor(sev_color)
-        c.roundRect(bx, iy - 4, badge_w, badge_h, 3, fill=1, stroke=0)
-        c.setFont(get_font("heading-regular"), 8)
+        c.roundRect(bx, iy - 3, badge_w, badge_h, 3, fill=1, stroke=0)
+        c.setFont(get_font("heading-regular"), 7)
         c.setFillColor(BG)
-        c.drawCentredString(bx + badge_w / 2, iy, severity)
+        c.drawCentredString(bx + badge_w / 2, iy + 1, severity)
 
         # Description — word-wrapped
         c.setFont(get_font("body"), issue_font_size)
@@ -903,12 +879,12 @@ def _startup_action_plan(c: canvas.Canvas, data: dict):
     c.line(MARGIN, H - 52, W - MARGIN, H - 52)
 
     # Subtitle
-    c.setFont(get_font("heading-regular"), 13)
+    c.setFont(get_font("heading-regular"), 12)
     c.setFillColor(WHITE)
     c.drawString(MARGIN, H - 72, "RECOMMENDED DECK STRUCTURE")
 
     slides_total = data.get("total_slides", 0)
-    c.setFont(get_font("body"), 10)
+    c.setFont(get_font("body"), 9)
     c.setFillColor(MUTED)
     rec_slides = data.get("recommended_structure", [])
     c.drawString(MARGIN, H - 88,
@@ -919,7 +895,7 @@ def _startup_action_plan(c: canvas.Canvas, data: dict):
     col1_x = MARGIN
     col2_x = MARGIN + col_w + 20
     start_y = H - 110
-    row_h = 28
+    row_h = 26
     mid = (len(rec_slides) + 1) // 2
 
     for i, slide in enumerate(rec_slides):
@@ -938,15 +914,15 @@ def _startup_action_plan(c: canvas.Canvas, data: dict):
         c.circle(x + 6, y + 4, 4, fill=1, stroke=0)
 
         # Slide text
-        c.setFont(get_font("body"), 10)
+        c.setFont(get_font("body"), 9)
         c.setFillColor(WHITE)
         c.drawString(x + 16, y, f"{slide['slide_number']}. {slide['title']}")
 
         # Annotation
         if slide.get("annotation"):
             ann_x = x + 16 + c.stringWidth(
-                f"{slide['slide_number']}. {slide['title']}  ", get_font("body"), 10)
-            c.setFont(get_font("heading-regular"), 9)
+                f"{slide['slide_number']}. {slide['title']}  ", get_font("body"), 9)
+            c.setFont(get_font("heading-regular"), 8)
             c.setFillColor(RED)
             c.drawString(ann_x, y, slide["annotation"])
 
@@ -957,7 +933,7 @@ def _startup_action_plan(c: canvas.Canvas, data: dict):
     for label, color in legend_items:
         c.setFillColor(color)
         c.circle(lx + 4, legend_y + 3, 4, fill=1, stroke=0)
-        c.setFont(get_font("body"), 9)
+        c.setFont(get_font("body"), 8)
         c.setFillColor(MUTED)
         c.drawString(lx + 12, legend_y, label)
         lx += 130
@@ -969,12 +945,12 @@ def _startup_action_plan(c: canvas.Canvas, data: dict):
     c.setLineWidth(1)
     c.roundRect(MARGIN, impact_y - 15, INNER_W, 45, 6, fill=1, stroke=1)
 
-    c.setFont(get_font("heading-regular"), 13)
+    c.setFont(get_font("heading-regular"), 12)
     c.setFillColor(GREEN)
     c.drawString(MARGIN + 15, impact_y + 15,
                  f"ESTIMATED IMPACT: {data.get('estimated_impact', '')}")
 
-    c.setFont(get_font("body"), 11)
+    c.setFont(get_font("body"), 10)
     c.setFillColor(WHITE)
     c.drawString(MARGIN + 15, impact_y - 3,
                  f"Current: {data.get('current_readiness', '')}  →  Target: {data.get('target_readiness', '')} fundraising readiness")
@@ -993,7 +969,7 @@ def _startup_action_plan(c: canvas.Canvas, data: dict):
     issues_count = len(data.get("issues", []))
     missing = data.get("checklist_summary", {}).get("missing", 0)
     readiness = data.get("current_readiness", "")
-    c.setFont(get_font("body"), 10)
+    c.setFont(get_font("body"), 9)
     c.setFillColor(MUTED)
     strip = f"{slides_total} Slides Analyzed  |  {issues_count} Issues  |  {missing} Missing Elements  |  {readiness} Readiness"
     c.drawCentredString(W / 2, cta_y - 50, strip)

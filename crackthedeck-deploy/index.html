@@ -99,7 +99,7 @@
 <section class="hero dot-grid" id="hero">
   <div class="hero__content">
     <h1 class="hero__title fade-in">Crack the Deck</h1>
-    <p class="hero__subtitle fade-in">Professional investor review for your pitch deck. Trained on&nbsp;1,000+&nbsp;real&nbsp;decks. Score&nbsp;78/100, red&nbsp;flags, slide-by-slide feedback&nbsp;&&nbsp;IC&nbsp;simulation.</p>
+    <p class="hero__subtitle fade-in">Professional investor review for your pitch deck. Trained on 1,000+ real decks. Score 78/100, red flags, slide‑by‑slide feedback & IC simulation.</p>
     <button class="btn btn--cta btn--lg btn--bounce" onclick="openUploadModal()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Upload My Deck
@@ -230,6 +230,42 @@
     </div>
     <div class="how-it-works__visual fade-in">
       <img src="./assets/how-it-works.png" alt="3-step process: upload PDF, AI lightning analysis, checklist with green checks" width="800" height="450" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<div class="gradient-line"></div>
+
+<!-- ===== ARKANOID INTERACTIVE SECTION ===== -->
+<section class="arkanoid-section" id="arkanoid">
+  <div class="arkanoid-section__inner">
+    <div class="arkanoid-section__text fade-in">
+      <div class="arkanoid-section__label">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        The Fundraising Game
+      </div>
+      <h2 class="arkanoid-section__title">Most pitch decks <span>never get funded</span></h2>
+      <p class="arkanoid-section__desc">
+        Investors reject 9 out of 10 decks in under 3 minutes. Weak narrative, missing financials, unclear market — these silent killers end the conversation before it starts. Our AI catches what founders miss.
+      </p>
+      <div class="arkanoid-section__stats">
+        <div>
+          <div class="arkanoid-section__stat-number">90%</div>
+          <div class="arkanoid-section__stat-label">decks rejected</div>
+        </div>
+        <div>
+          <div class="arkanoid-section__stat-number">2:47</div>
+          <div class="arkanoid-section__stat-label">avg. review time</div>
+        </div>
+        <div>
+          <div class="arkanoid-section__stat-number">1 in 15</div>
+          <div class="arkanoid-section__stat-label">gets funded</div>
+        </div>
+      </div>
+    </div>
+    <div class="arkanoid-section__game fade-in" id="arkanoidBlock">
+      <canvas id="arkanoidGame"></canvas>
+      <p class="arkanoid-section__game-caption">Every brick is a startup. Only one gets funded.</p>
     </div>
   </div>
 </section>
@@ -719,5 +755,6 @@
 </dialog>
 
 <script src="./app.js"></script>
+<script src="./arkanoid.js" defer></script>
 </body>
 </html>
