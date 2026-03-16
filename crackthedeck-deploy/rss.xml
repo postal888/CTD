@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CrackTheDeck Blog</title>
+    <link>https://crackthedeck.com/blog.html</link>
+    <description>Expert insights on pitch decks, fundraising strategy, and investor psychology from the CrackTheDeck team.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 15 Mar 2026 12:00:00 +0000</lastBuildDate>
+    <atom:link href="https://crackthedeck.com/rss.xml" rel="self" type="application/rss+xml"/>
+
+    <item>
+      <title>Anatomy of a Perfect Pitch Deck: The 10 Slides That Actually Matter</title>
+      <link>https://crackthedeck.com/article-anatomy.html</link>
+      <guid isPermaLink="true">https://crackthedeck.com/article-anatomy.html</guid>
+      <pubDate>Wed, 12 Mar 2026 10:00:00 +0000</pubDate>
+      <description>What Sequoia, a16z, and Y Combinator actually look for in a pitch deck. A slide-by-slide breakdown based on real frameworks from top VC firms.</description>
+    </item>
+
+    <item>
+      <title>7 Pitch Deck Mistakes That Make Investors Say No (Before Slide 5)</title>
+      <link>https://crackthedeck.com/article-mistakes.html</link>
+      <guid isPermaLink="true">https://crackthedeck.com/article-mistakes.html</guid>
+      <pubDate>Wed, 12 Mar 2026 10:00:00 +0000</pubDate>
+      <description>The most common pitch deck mistakes that kill fundraising rounds. Based on real VC feedback and post-mortem analysis of failed rounds.</description>
+    </item>
+
+  </channel>
+</rss>

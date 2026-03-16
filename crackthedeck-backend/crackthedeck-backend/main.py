@@ -4,6 +4,7 @@ FastAPI backend that analyzes startup pitch decks using GPT-4o vision
 and generates structured PDF reports for investors and founders.
 """
 
+import asyncio
 import logging
 from pathlib import Path
 from typing import Optional
@@ -17,6 +18,12 @@ from pydantic import BaseModel
 
 import config
 from deals_feed import router as deals_router
+from stripe_payments import router as stripe_router, _analysis_jobs, _run_analysis_background, _generate_token
+from paypal_payments import router as paypal_router
+from resend_emails import router as email_router
+from admin_api import router as admin_router
+from cloudflare_analytics import cf_router
+from admin_db import init_db, log_upload, log_feedback
 
 # Frontend (crackthedeck-deploy) — serve from backend when opening http://localhost:8000
 FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "crackthedeck-deploy"
@@ -50,12 +57,18 @@ app.add_middleware(
 )
 
 app.include_router(deals_router)
+app.include_router(stripe_router)
+app.include_router(paypal_router)
+app.include_router(email_router)
+app.include_router(admin_router)
+app.include_router(cf_router)
 
 
 @app.on_event("startup")
 async def startup():
     """Pre-download fonts on startup."""
     logger.info("Starting CrackTheDeck API...")
+    init_db()
     presentations_dir = config.UPLOAD_DIR.resolve()
     logger.info(f"Presentations dir (absolute): {presentations_dir}")
     download_fonts()
@@ -150,6 +163,18 @@ async def analyze(
     # Build response
     pdf_url = f"/api/report/{report_id}/{report_type}/pdf"
 
+    # Log to admin DB
+    try:
+        log_upload(
+            report_id=report_id,
+            filename=filename,
+            file_size_bytes=len(file_bytes),
+            report_type=report_type,
+            company_name=analysis_data.get("company_name", ""),
+        )
+    except Exception:
+        pass  # Don't break analysis if logging fails
+
     return JSONResponse({
         "report_id": report_id,
         "report_type": report_type,
@@ -157,6 +182,29 @@ async def analyze(
         "pdf_url": pdf_url,
         "data": analysis_data,
     })
+
+
+# ── Feedback ────────────────────────────────────────────────────────
+
+class FeedbackRequest(BaseModel):
+    report_id: str = ""
+    rating: int
+    reasons: list[str] = []
+    comment: str = ""
+
+@app.post("/api/feedback")
+async def submit_feedback(body: FeedbackRequest):
+    """Save user feedback (1-5 stars + optional reasons/comment)."""
+    if body.rating < 1 or body.rating > 5:
+        raise HTTPException(400, "Rating must be 1-5")
+    log_feedback(
+        report_id=body.report_id,
+        rating=body.rating,
+        reasons=", ".join(body.reasons) if body.reasons else "",
+        comment=body.comment,
+    )
+    logger.info(f"Feedback received: rating={body.rating}, report={body.report_id}")
+    return JSONResponse({"status": "ok"})
 
 
 # ── Match funds (proxy to funds-rag-service) ─────────────────────────

@@ -477,18 +477,26 @@ def _investor_metrics(c: canvas.Canvas, data: dict):
             c.setFont(get_font("body"), 9)
             c.setFillColor(MUTED)
             c.drawString(x + 15, y, label)
-            # Try 16pt first; if text is too wide, shrink to 12pt
+            # Auto-size font and wrap long values
             val_str = str(value)
             val_font = get_font("body-bold")
-            val_size = 16
-            if c.stringWidth(val_str, val_font, val_size) > value_max_w:
-                val_size = 12
-            if c.stringWidth(val_str, val_font, val_size) > value_max_w:
+            if c.stringWidth(val_str, val_font, 14) <= value_max_w:
+                val_size = 14
+                val_lh = 17
+            elif c.stringWidth(val_str, val_font, 11) <= value_max_w:
+                val_size = 11
+                val_lh = 14
+            else:
                 val_size = 10
+                val_lh = 13
+            val_lines = _wrap_text(c, val_str, val_font, val_size, value_max_w, max_lines=3)
+            if not val_lines:
+                val_lines = [val_str]
             c.setFont(val_font, val_size)
             c.setFillColor(WHITE)
-            c.drawString(x + 15, y - 20, val_str)
-            y -= 55
+            for vi, vl in enumerate(val_lines):
+                c.drawString(x + 15, y - 18 - vi * val_lh, vl)
+            y -= 34 + (len(val_lines) - 1) * val_lh + 5
             # Stop if we'd overflow below footer
             if y - 55 < 40:
                 break

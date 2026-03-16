@@ -459,15 +459,33 @@ def _investor_metrics(c: canvas.Canvas, data: dict):
     c.drawString(x + 15, y_start - 15, "KEY METRICS")
 
     y = y_start - 40
+    metrics_max_w = col_w - 30  # 15px padding each side
     for label, value in metrics_items:
         if value:
             c.setFont(get_font("body"), 8)
             c.setFillColor(MUTED)
             c.drawString(x + 15, y, label)
-            c.setFont(get_font("body-bold"), 14)
+            # Wrap long metric values to fit within the box
+            val_str = str(value)
+            val_font = get_font("body-bold")
+            # Auto-size: use smaller font for long values
+            if c.stringWidth(val_str, val_font, 14) <= metrics_max_w:
+                val_size = 14
+                val_lh = 17
+            elif c.stringWidth(val_str, val_font, 11) <= metrics_max_w:
+                val_size = 11
+                val_lh = 14
+            else:
+                val_size = 10
+                val_lh = 13
+            val_lines = _wrap_text(c, val_str, val_font, val_size, metrics_max_w, max_lines=3)
+            if not val_lines:
+                val_lines = [val_str]
+            c.setFont(val_font, val_size)
             c.setFillColor(WHITE)
-            c.drawString(x + 15, y - 18, str(value))
-            y -= 52
+            for vi, vl in enumerate(val_lines):
+                c.drawString(x + 15, y - 18 - vi * val_lh, vl)
+            y -= 34 + (len(val_lines) - 1) * val_lh + 5
 
     # Right column: Strengths + Risks
     rx = MARGIN + col_w + 25
