@@ -1,5 +1,26 @@
 /* ===== CrackTheDeck — App JS ===== */
 
+/* --- GA4 Custom Events Helper --- */
+function ctdTrack(eventName, params) {
+  try {
+    if (typeof gtag === 'function') {
+      gtag('event', eventName, params || {});
+    }
+  } catch (e) { /* silently ignore */ }
+}
+
+// 1. view_landing — fires once on page load
+(function () {
+  // Capture UTM params for attribution
+  var params = new URLSearchParams(window.location.search);
+  ctdTrack('view_landing', {
+    landing_variant: params.get('utm_content') || 'default',
+    utm_source: params.get('utm_source') || '(direct)',
+    utm_medium: params.get('utm_medium') || '(none)',
+    utm_campaign: params.get('utm_campaign') || '(none)'
+  });
+})();
+
 /* --- Dark Mode Toggle --- */
 (function () {
   const toggle = document.querySelector('[data-theme-toggle]');
@@ -99,6 +120,13 @@ function selectPlan(planId) {
   document.querySelectorAll('.modal-plan-card').forEach(function (card) {
     card.classList.toggle('selected', card.getAttribute('data-plan') === planId);
   });
+  // Track plan selection
+  var planPriceMap = { basic: 19, pro: 49, expert: 499 };
+  ctdTrack('select_plan', {
+    plan: planId,
+    value: planPriceMap[planId] || 0,
+    currency: 'USD'
+  });
   goToStep(3);
 }
 
@@ -189,6 +217,12 @@ function handleFileSelect(input) {
     selectedFile = input.files[0];
     showFileName(selectedFile.name);
     hideUploadError();
+    // 2. upload_deck — user selected a file
+    var ext = (selectedFile.name || '').split('.').pop().toLowerCase();
+    ctdTrack('upload_deck', {
+      file_type: ext,
+      file_size_mb: +(selectedFile.size / (1024 * 1024)).toFixed(2)
+    });
   }
 }
 
@@ -456,6 +490,16 @@ async function submitUpload() {
 
   // ---- All plans go through Stripe Checkout ----
   if (!selectedPlan) selectedPlan = 'basic';
+
+  // 3. start_checkout — user clicked submit (heading to payment)
+  var planPrices = { basic: 19, pro: 49, expert: 499 };
+  ctdTrack('start_checkout', {
+    currency: 'USD',
+    value: planPrices[selectedPlan] || 0,
+    plan: selectedPlan,
+    payment_method: 'stripe'
+  });
+
   try {
     if (btn) btn.textContent = 'Redirecting to payment…';
     var form = new FormData();
@@ -504,6 +548,12 @@ async function submitUpload() {
     if (files.length > 0) {
       selectedFile = files[0];
       showFileName(selectedFile.name);
+      // upload_deck for drag & drop
+      var ext = (selectedFile.name || '').split('.').pop().toLowerCase();
+      ctdTrack('upload_deck', {
+        file_type: ext,
+        file_size_mb: +(selectedFile.size / (1024 * 1024)).toFixed(2)
+      });
     }
   });
   dz.addEventListener('click', e => {
@@ -1176,6 +1226,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (data.paid) {
           paymentMeta = data.meta || {};
           var plan = (paymentMeta.plan || 'basic').toLowerCase();
+
+          // 4. purchase — Stripe payment confirmed
+          var purchasePrices = { basic: 19, pro: 49, expert: 499 };
+          ctdTrack('purchase', {
+            currency: 'USD',
+            value: purchasePrices[plan] || 0,
+            transaction_id: sessionId || token || '',
+            plan: plan,
+            payment_method: 'stripe'
+          });
           if (plan === 'pro' || plan === 'expert') {
             // Pro/Expert: human review, show "coming in 24 hours"
             if (successMsg) successMsg.innerHTML = '<strong>Payment confirmed!</strong><br><br>Your deck is being analyzed by our AI engine. After that, our expert investor team will review it personally.<br><br>You will receive the full report at <strong>' + (paymentMeta.email || 'your email') + '</strong> within <strong>24 hours</strong>.';
@@ -1319,6 +1379,15 @@ function renderPayPalButton() {
   form.append('stage', (document.getElementById('modalStage') || {}).value || '');
   form.append('report_type', 'investor');
 
+  // start_checkout for PayPal
+  var ppPlanPrices = { basic: 19, pro: 49, expert: 499 };
+  ctdTrack('start_checkout', {
+    currency: 'USD',
+    value: ppPlanPrices[selectedPlan] || 0,
+    plan: selectedPlan || 'basic',
+    payment_method: 'paypal'
+  });
+
   fetch(API_BASE + '/api/paypal/prepare-upload', { method: 'POST', body: form })
     .then(function(r) { return r.json(); })
     .then(function(data) {
@@ -1354,6 +1423,15 @@ function _doRenderPayPalButtons(container) {
       }).then(function(r) { return r.json(); })
         .then(function(result) {
           if (result.status === 'success') {
+            // purchase for PayPal
+            var ppPurchasePrices = { basic: 19, pro: 49, expert: 499 };
+            ctdTrack('purchase', {
+              currency: 'USD',
+              value: ppPurchasePrices[result.plan] || 0,
+              transaction_id: data.orderID || '',
+              plan: result.plan || 'basic',
+              payment_method: 'paypal'
+            });
             _startPayPalPolling(result.token, result.plan, result.email);
           } else {
             showUploadError('Payment failed. Please try again.');
