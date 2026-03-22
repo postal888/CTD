@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   _
+-->
+
+<!--  -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startup Valuation Calculator — CrackTheDeck</title>
+<meta name="description" content="Estimate your startup's valuation using comparable transaction data. Revenue multiples by industry and funding round.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════
+   RESET & BASE
+   ══════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #141419;
+  --surface: #1A1A22;
+  --card: #1E1E28;
+  --card-hover: #222230;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text-primary: #F0F0F5;
+  --text-secondary: rgba(240,240,245,0.6);
+  --text-tertiary: rgba(240,240,245,0.35);
+  --accent-1: #00E5C3;
+  --accent-2: #00E676;
+  --gradient: linear-gradient(135deg, #00E5C3, #00E676);
+  --warning: #FFD600;
+  --error: #FF4081;
+  --font-heading: 'Inter Tight', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.5;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Dot grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Subtle gradient orbs */
+body::after {
+  content: '';
+  position: fixed;
+  top: -20%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0,229,195,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ══════════════════════════════════════════
+   LAYOUT
+   ══════════════════════════════════════════ */
+.page-wrapper {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ══════════════════════════════════════════
+   NAV
+   ══════════════════════════════════════════ */
+.nav {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  background: rgba(20,20,25,0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.nav-logo svg {
+  width: 32px;
+  height: 32px;
+}
+
+.nav-logo span {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: -0.02em;
+}
+
+.nav-link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  background: rgba(255,255,255,0.03);
+}
+
+/* ══════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════ */
+.hero {
+  padding: 48px 0 8px;
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: rgba(0,229,195,0.08);
+  border: 1px solid rgba(0,229,195,0.15);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent-1);
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-1);
+  animation: pulse-dot 2s ease infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hero h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+.hero h1 .gradient-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  max-width: 540px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════════════════
+   MAIN GRID
+   ══════════════════════════════════════════ */
+.main-content {
+  padding: 32px 0 60px;
+  flex: 1;
+}
+
+/* Flex row + top alignment. Two common theme bugs:
+   (1) .calc-grid > .card { margin-top } — only the left direct .card gets margin.
+   (2) align-items: center on the row — shorter left column centers vs taller right → gap above left.
+   Use id + per-item align-self !important; inline styles on markup as last resort vs CMS. */
+.calc-grid,
+#ctd-valuation-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start !important;
+  align-content: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 24px;
+  width: 100%;
+}
+
+/* Each flex item: start on cross-axis (beats parent align-items:center from theme) */
+#ctd-valuation-grid > .input-panel,
+#ctd-valuation-grid > .results-area {
+  align-self: flex-start !important;
+}
+
+.calc-grid > *,
+#ctd-valuation-grid > * {
+  margin: 0 !important;
+  margin-block-start: 0 !important;
+  margin-block-end: 0 !important;
+  min-width: 0;
+}
+
+/* Beats theme rules like .main .calc-grid > .card { margin-top: 6rem } (only targets left card) */
+.calc-grid > .card.input-panel,
+#ctd-valuation-grid > .card.input-panel {
+  margin-top: 0 !important;
+  margin-block-start: 0 !important;
+  top: auto !important;
+}
+
+.input-panel {
+  flex: 0 0 auto;
+  align-self: flex-start !important;
+  width: clamp(280px, 32vw, 380px);
+  max-width: 380px;
+}
+
+.results-area {
+  flex: 1 1 0%;
+  min-width: 0;
+  align-self: flex-start !important;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 840px) {
+  .calc-grid {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+  .input-panel {
+    position: static !important;
+    top: auto !important;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+  .results-area {
+    width: 100%;
+  }
+}
+
+/* ══════════════════════════════════════════
+   CARD STYLES
+   ══════════════════════════════════════════ */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+}
+
+.card-glow {
+  box-shadow: 0 0 0 1px rgba(0,229,195,0.06), 0 8px 40px rgba(0,0,0,0.3);
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 0 1px rgba(0,229,195,0.12), 0 8px 50px rgba(0,229,195,0.06), 0 8px 40px rgba(0,0,0,0.3);
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  margin-bottom: 24px;
+}
+
+/* ══════════════════════════════════════════
+   INPUT PANEL
+   ══════════════════════════════════════════ */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group:last-child {
+  margin-bottom: 0;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.input-label .label-hint {
+  font-weight: 400;
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--text-tertiary);
+  pointer-events: none;
+}
+
+select, .text-input {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+select {
+  padding-right: 36px;
+}
+
+select:focus, .text-input:focus {
+  border-color: rgba(0,229,195,0.4);
+  box-shadow: 0 0 0 3px rgba(0,229,195,0.08);
+}
+
+select option {
+  background: var(--card);
+  color: var(--text-primary);
+}
+
+.text-input {
+  cursor: text;
+}
+
+.text-input::placeholder {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.input-prefix {
+  position: relative;
+}
+
+.input-prefix .text-input {
+  padding-left: 28px;
+}
+
+.input-prefix::before {
+  content: '$';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════
+   OUTPUT / RESULT AREA
+   ══════════════════════════════════════════ */
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 240px;
+  text-align: center;
+  padding: 4px 20px 32px;
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(0,229,195,0.06);
+  border: 1px solid rgba(0,229,195,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.empty-state-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: var(--accent-1);
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+.empty-state p {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  max-width: 280px;
+}
+
+/* Valuation card — same vertical padding as .card (28px) so top labels line up with Parameters */
+.valuation-card {
+  padding: 28px;
+  background: var(--card);
+  border: 1px solid rgba(0,229,195,0.12);
+  position: relative;
+}
+
+.valuation-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(0,229,195,0.04) 0%, rgba(0,230,118,0.02) 100%);
+  pointer-events: none;
+}
+
+.valuation-card:hover {
+  border-color: rgba(0,229,195,0.2);
+  box-shadow: 0 0 60px rgba(0,229,195,0.06);
+}
+
+.valuation-topline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.valuation-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.valuation-multiple {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent-1);
+  background: rgba(0,229,195,0.08);
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+
+.valuation-amount {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  transition: opacity 0.15s;
+}
+
+.valuation-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+}
+
+.meta-chip .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.meta-chip .dot.green { background: var(--accent-2); }
+.meta-chip .dot.yellow { background: var(--warning); }
+
+/* Range bar */
+/* Method breakdown */
+.method-section {
+  margin-top: 20px;
+  padding: 16px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.method-label {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.method-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.breakdown-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.breakdown-row:last-child {
+  border-bottom: none;
+}
+.breakdown-row.total {
+  border-top: 1px solid rgba(0,229,195,0.2);
+  padding-top: 10px;
+  margin-top: 4px;
+}
+.breakdown-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.breakdown-row.total .breakdown-label {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.breakdown-calc {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-family: 'SF Mono', 'Cascadia Code', monospace;
+  text-align: right;
+}
+.breakdown-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  min-width: 80px;
+}
+.breakdown-row.total .breakdown-value {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 16px;
+}
+
+.range-section {
+  margin-bottom: 0;
+}
+
+.range-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.range-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.range-values {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.range-bar-track {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 100px;
+  position: relative;
+  overflow: visible;
+}
+
+.range-bar-fill {
+  position: absolute;
+  height: 100%;
+  border-radius: 100px;
+  background: var(--gradient);
+  opacity: 0.3;
+  transition: left 0.4s ease, width 0.4s ease;
+}
+
+.range-bar-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-1);
+  box-shadow: 0 0 10px rgba(0,229,195,0.4);
+  transition: left 0.4s ease;
+  z-index: 2;
+}
+
+.range-bar-marker::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: white;
+}
+
+.range-endpoints {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.range-endpoints span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-heading);
+}
+
+.range-endpoints .low { color: var(--text-tertiary); }
+.range-endpoints .high { color: var(--text-secondary); }
+
+/* Warning banner */
+.warning-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255,214,0,0.06);
+  border: 1px solid rgba(255,214,0,0.15);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  color: var(--warning);
+  margin-top: 16px;
+}
+
+.warning-banner.fallback {
+  background: rgba(0,229,195,0.04);
+  border-color: rgba(0,229,195,0.12);
+  color: var(--accent-1);
+}
+
+/* Comparison table */
+.comparison-card {
+  padding: 24px;
+}
+
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comp-table thead th {
+  font-family: var(--font-heading);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  text-align: left;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.comp-table thead th:not(:first-child) {
+  text-align: right;
+}
+
+.comp-table tbody td {
+  padding: 12px 0;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.comp-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.comp-table tbody td:not(:first-child) {
+  text-align: right;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.comp-table .row-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.comp-table .highlight {
+  color: var(--accent-1);
+}
+
+.comp-table .row-active .row-label {
+  color: var(--text-primary);
+}
+
+.comp-table .na {
+  color: var(--text-tertiary);
+  font-weight: 400;
+  font-size: 0.8125rem;
+}
+
+/* Sparkline chart */
+.sparkline-card {
+  padding: 24px;
+}
+
+.sparkline-title {
+  font-family: var(--font-heading);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  margin-bottom: 20px;
+}
+
+.sparkline-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.sparkline-row:last-child {
+  margin-bottom: 0;
+}
+
+.spark-label {
+  width: 64px;
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-align: right;
+  font-family: var(--font-heading);
+  letter-spacing: 0.02em;
+}
+
+.spark-bar-track {
+  flex: 1;
+  height: 20px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.spark-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--gradient);
+  opacity: 0.5;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 2px;
+}
+
+.spark-bar-fill.active {
+  opacity: 0.9;
+}
+
+.spark-value {
+  width: 48px;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-heading);
+  color: var(--text-secondary);
+}
+
+.spark-value.active {
+  color: var(--accent-1);
+}
+
+/* ══════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════ */
+.footer {
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer p {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  line-height: 1.7;
+}
+
+.footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer a:hover {
+  color: var(--accent-1);
+}
+
+/* ══════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════ */
+/* Opacity only — translateY made the results card look shifted vs the left column */
+@keyframes fadeInUp {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-in {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.results-area > .card {
+  animation: fadeInUp 0.35s ease forwards;
+}
+
+.results-area > .card:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.results-area > .card:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .container { padding: 0 16px; }
+  .card { padding: 20px; }
+  .valuation-card { padding: 24px; }
+  .hero { padding: 32px 0 4px; }
+  .main-content { padding: 24px 0 40px; }
+  .valuation-meta { gap: 8px; }
+  .meta-chip { font-size: 0.6875rem; padding: 4px 10px; }
+  .breakdown-row {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 2px 12px;
+  }
+  .breakdown-label {
+    font-size: 12px;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .breakdown-calc {
+    font-size: 10px;
+    grid-column: 1;
+    grid-row: 2;
+    text-align: left;
+  }
+  .breakdown-value {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    font-size: 14px;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+/* SaaS slider */
+.saas-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saas-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.08);
+  outline: none;
+  cursor: pointer;
+}
+
+.saas-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-1);
+  box-shadow: 0 0 10px rgba(0,229,195,0.3);
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+.saas-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 16px rgba(0,229,195,0.5);
+}
+
+.saas-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-1);
+  box-shadow: 0 0 10px rgba(0,229,195,0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.saas-value-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.saas-value {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.saas-hint {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="container">
+      <a href="https://crackthedeck.com" class="nav-logo" aria-label="CrackTheDeck home">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logo-grad" x1="4" y1="4" x2="28" y2="28">
+              <stop offset="0%" stop-color="#00E5C3"/>
+              <stop offset="100%" stop-color="#00E676"/>
+            </linearGradient>
+          </defs>
+          <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="url(#logo-grad)" stroke-width="1.5" fill="none"/>
+          <path d="M16 2L28 9L16 16L4 9L16 2Z" fill="url(#logo-grad)" opacity="0.15"/>
+          <path d="M16 16L28 9V23L16 30V16Z" fill="url(#logo-grad)" opacity="0.08"/>
+          <path d="M10 12L16 8L22 12L16 16L10 12Z" fill="url(#logo-grad)" opacity="0.6"/>
+          <path d="M16 16L22 12V20L16 24V16Z" fill="url(#logo-grad)" opacity="0.35"/>
+          <path d="M16 16L10 12V20L16 24V16Z" fill="url(#logo-grad)" opacity="0.2"/>
+        </svg>
+        <span>CrackTheDeck</span>
+      </a>
+      <a href="https://crackthedeck.com" class="nav-link">← Back to site</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">Based on Comparable Transactions</div>
+      <h1>Startup <span class="gradient-text">Valuation</span> Calculator</h1>
+      <p>Estimate your startup's enterprise value using revenue multiples from real comparable deals, segmented by industry and funding round.</p>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="container">
+      <div class="calc-grid" id="ctd-valuation-grid" style="align-items:flex-start;align-content:flex-start;justify-content:flex-start;">
+
+        <!-- LEFT: Inputs -->
+        <div class="card card-glow input-panel" style="align-self:flex-start;">
+          <div class="card-title">Parameters</div>
+
+          <div class="input-group">
+            <label class="input-label" for="industry">Industry</label>
+            <div class="select-wrapper">
+              <select id="industry">
+                <option value="" disabled selected>Select industry…</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="round">Funding Round</label>
+            <div class="select-wrapper">
+              <select id="round">
+                <option value="" disabled selected>Select round…</option>
+                <option value="Angel">Angel</option>
+                <option value="Seed">Seed</option>
+                <option value="Series A">Series A</option>
+                <option value="Series B">Series B</option>
+                <option value="Series C+">Series C+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="revenue">Current TTM Revenue <span class="label-hint">(USD)</span></label>
+            <div class="input-prefix">
+              <input type="text" id="revenue" class="text-input" placeholder="e.g. 2,500,000" inputmode="numeric" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="revenue-next">Expected Next Year TTM <span class="label-hint">(USD)</span></label>
+            <div class="input-prefix">
+              <input type="text" id="revenue-next" class="text-input" placeholder="e.g. 5,000,000" inputmode="numeric" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="saas-pct">SaaS Share of Revenue <span class="label-hint">(%)</span></label>
+            <div class="saas-input-wrapper">
+              <input type="range" id="saas-pct" class="saas-slider" min="0" max="100" value="100" step="5">
+              <div class="saas-value-row">
+                <span class="saas-value" id="saas-value-display">100%</span>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Results -->
+        <div class="results-area" id="results-area" style="align-self:flex-start;">
+          <!-- Empty state -->
+          <div class="card" id="empty-state">
+            <div class="empty-state">
+              <div class="empty-state-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                  <path d="M2 17l10 5 10-5"/>
+                  <path d="M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <h3>Configure your inputs</h3>
+              <p>Select an industry, funding round, and enter your revenue figures to see your estimated valuation.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p><a href="https://crackthedeck.com" target="_blank" rel="noopener noreferrer">CrackTheDeck</a></p>
+    </div>
+  </footer>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA (from Comparables_ext.xlsx)
+// ══════════════════════════════════════════
+const DATA = {"AI (all AI-tagged)":{"Angel":{"median":19.3,"n":2,"p25":16.0,"p75":22.6},"Seed":{"median":10.9,"n":13,"p25":7.0,"p75":43.7},"Series A":{"median":12.3,"n":12,"p25":10.3,"p75":25.1},"Series B":{"median":29.0,"n":2,"p25":28.0,"p75":30.1},"Series C":{"median":40.1,"n":4,"p25":32.0,"p75":62.9},"Series D":{"median":40.5,"n":1,"p25":40.5,"p75":40.5},"Series E":{"median":25.5,"n":1,"p25":25.5,"p75":25.5},"Series G":{"median":25.8,"n":2,"p25":23.0,"p75":28.6}},"Aerospace, Maritime and Defense Tech":{"Angel":{"median":7.1,"n":1,"p25":7.1,"p75":7.1},"Seed":{"median":10.3,"n":7,"p25":5.5,"p75":31.8},"Series A":{"median":11.3,"n":1,"p25":11.3,"p75":11.3},"Series B":{"median":13.6,"n":1,"p25":13.6,"p75":13.6},"Series C":{"median":2.6,"n":1,"p25":2.6,"p75":2.6}},"Auto":{"Angel":{"median":5.0,"n":1,"p25":5.0,"p75":5.0},"Seed":{"median":3.5,"n":1,"p25":3.5,"p75":3.5},"Series A":{"median":2.0,"n":1,"p25":2.0,"p75":2.0},"Series B":{"median":2.0,"n":1,"p25":2.0,"p75":2.0},"Series C":{"median":2.0,"n":1,"p25":2.0,"p75":2.0}},"Business Services":{"Angel":{"median":3.7,"n":2,"p25":3.5,"p75":3.9},"Seed":{"median":9.1,"n":21,"p25":3.2,"p75":20.2},"Series A":{"median":2.3,"n":5,"p25":0.9,"p75":5.1},"Series B":{"median":4.5,"n":3,"p25":3.7,"p75":4.8},"Series C":{"median":5.2,"n":1,"p25":5.2,"p75":5.2},"Series D":{"median":8.9,"n":4,"p25":6.5,"p75":35.0},"Series E":{"median":12.6,"n":3,"p25":9.0,"p75":19.2}},"Consumer":{"Angel":{"median":12.6,"n":4,"p25":8.9,"p75":24.7},"Seed":{"median":16.3,"n":6,"p25":8.3,"p75":30.4},"Series A":{"median":17.1,"n":7,"p25":7.7,"p75":48.8},"Series B":{"median":2.8,"n":4,"p25":1.3,"p75":8.0},"Series C":{"median":2.8,"n":5,"p25":1.5,"p75":3.4},"Series D":{"median":6.1,"n":1,"p25":6.1,"p75":6.1},"Series F":{"median":10.7,"n":2,"p25":5.9,"p75":15.5},"Series G":{"median":20.3,"n":1,"p25":20.3,"p75":20.3}},"Consumer Goods":{"Angel":{"median":35.0,"n":1,"p25":35.0,"p75":35.0},"Seed":{"median":30.0,"n":1,"p25":30.0,"p75":30.0},"Series A":{"median":24.9,"n":2,"p25":13.1,"p75":36.7},"Series B":{"median":20.0,"n":1,"p25":20.0,"p75":20.0},"Series C":{"median":15.0,"n":1,"p25":15.0,"p75":15.0}},"EdTech":{"Angel":{"median":7.1,"n":1,"p25":7.1,"p75":7.1},"Seed":{"median":20.3,"n":7,"p25":7.4,"p75":25.6},"Series A":{"median":12.18,"n":2,"p25":50.3,"p75":53.3},"Series B":{"median":10.0,"n":1,"p25":10.0,"p75":10.0},"Series C":{"median":8.0,"n":1,"p25":8.0,"p75":8.0},"Series D":{"median":6.9,"n":3,"p25":4.8,"p75":10.3}},"Energy":{"Angel":{"median":10.0,"n":1,"p25":10.0,"p75":10.0},"Seed":{"median":8.0,"n":3,"p25":39.8,"p75":53.8},"Series A":{"median":5.0,"n":1,"p25":5.0,"p75":5.0},"Series B":{"median":5.0,"n":1,"p25":5.0,"p75":5.0},"Series C":{"median":5.0,"n":1,"p25":5.0,"p75":5.0},"Series D":{"median":5.0,"n":1,"p25":5.0,"p75":5.0},"Series E":{"median":5.0,"n":1,"p25":5.0,"p75":5.0}},"Energy Tech":{"Angel":{"median":8.7,"n":4,"p25":1.0,"p75":16.8},"Seed":{"median":7.1,"n":5,"p25":1.6,"p75":10.3},"Series A":{"median":4.1,"n":3,"p25":3.2,"p75":7.3},"Series B":{"median":0.9,"n":2,"p25":0.7,"p75":1.2},"Series C":{"median":16.2,"n":2,"p25":13.5,"p75":18.9},"Series E":{"median":5.1,"n":1,"p25":5.1,"p75":5.1}},"Enterprise Applications":{"Angel":{"median":17.0,"n":6,"p25":2.5,"p75":34.4},"Seed":{"median":24.0,"n":9,"p25":11.0,"p75":39.6},"Series A":{"median":8.4,"n":4,"p25":5.0,"p75":10.5},"Series B":{"median":9.3,"n":4,"p25":3.6,"p75":18.2},"Series C":{"median":7.0,"n":1,"p25":7.0,"p75":7.0},"Series D":{"median":7.1,"n":1,"p25":7.1,"p75":7.1},"Series E":{"median":1.7,"n":2,"p25":1.1,"p75":2.3}},"Enterprise Infrastructure":{"Angel":{"median":2.0,"n":2,"p25":1.7,"p75":2.4},"Seed":{"median":9.5,"n":15,"p25":4.7,"p75":33.7},"Series A":{"median":3.9,"n":11,"p25":3.0,"p75":16.6},"Series B":{"median":5.1,"n":4,"p25":1.8,"p75":10.3},"Series C":{"median":6.0,"n":3,"p25":4.7,"p75":10.9},"Series E":{"median":6.6,"n":1,"p25":6.6,"p75":6.6}},"Environment Tech":{"Angel":{"median":6.0,"n":1,"p25":6.0,"p75":6.0},"Seed":{"median":3.7,"n":9,"p25":2.1,"p75":23.0},"Series A":{"median":2.0,"n":1,"p25":2.0,"p75":2.0},"Series B":{"median":2.0,"n":2,"p25":1.1,"p75":1.4},"Series C":{"median":2.0,"n":2,"p25":4.3,"p75":6.6},"Series D":{"median":2.0,"n":2,"p25":22.5,"p75":36.8}},"FinTech":{"Angel":{"median":14.2,"n":4,"p25":4.6,"p75":23.7},"Seed":{"median":22.1,"n":17,"p25":7.0,"p75":39.6},"Series A":{"median":6.8,"n":8,"p25":4.4,"p75":29.2},"Series B":{"median":9.3,"n":1,"p25":9.3,"p75":9.3},"Series C":{"median":12.4,"n":1,"p25":12.4,"p75":12.4},"Series D":{"median":11.5,"n":4,"p25":10.3,"p75":14.6},"Series E":{"median":18.1,"n":4,"p25":15.0,"p75":22.8}},"Financial Services":{"Angel":{"median":4.0,"n":5,"p25":3.8,"p75":27.9},"Seed":{"median":7.7,"n":4,"p25":6.4,"p75":16.8},"Series A":{"median":4.9,"n":2,"p25":2.9,"p75":6.9},"Series B":{"median":5.9,"n":2,"p25":5.5,"p75":6.4},"Series C":{"median":4.0,"n":1,"p25":4.0,"p75":4.0},"Series D":{"median":3.54,"n":1,"p25":3.54,"p75":3.54}},"Food and Agriculture":{"Angel":{"median":7.8,"n":9,"p25":6.5,"p75":11.9},"Seed":{"median":13.1,"n":62,"p25":5.2,"p75":37.7},"Series A":{"median":13.4,"n":24,"p25":3.7,"p75":43.6},"Series B":{"median":14.3,"n":12,"p25":8.6,"p75":22.9},"Series C":{"median":4.2,"n":10,"p25":1.7,"p75":6.1},"Series D":{"median":4.6,"n":11,"p25":3.2,"p75":18.1},"Series E":{"median":7.8,"n":6,"p25":6.3,"p75":12.0},"Series F":{"median":8.9,"n":4,"p25":4.4,"p75":17.3},"Series G":{"median":18.8,"n":2,"p25":12.6,"p75":25.1},"Series H":{"median":15.2,"n":3,"p25":11.1,"p75":15.2},"Series I":{"median":4.4,"n":1,"p25":4.4,"p75":4.4}},"Food and Agriculture Tech":{"Angel":{"median":5.4,"n":8,"p25":1.7,"p75":11.8},"Seed":{"median":13.4,"n":22,"p25":4.1,"p75":38.7},"Series A":{"median":4.2,"n":9,"p25":3.8,"p75":5.9},"Series B":{"median":6.7,"n":4,"p25":4.5,"p75":9.2},"Series C":{"median":20.3,"n":4,"p25":7.9,"p75":51.1},"Series D":{"median":2.8,"n":2,"p25":1.6,"p75":4.0},"Series E":{"median":44.9,"n":2,"p25":26.8,"p75":63.0},"Series F":{"median":0.7,"n":1,"p25":0.7,"p75":0.7},"Series G":{"median":1.1,"n":1,"p25":1.1,"p75":1.1},"Series I":{"median":4.5,"n":1,"p25":4.5,"p75":4.5}},"HealthTech":{"Angel":{"median":12.7,"n":5,"p25":11.2,"p75":31.3},"Seed":{"median":12.2,"n":20,"p25":5.5,"p75":24.4},"Series A":{"median":10.5,"n":6,"p25":8.4,"p75":12.5},"Series B":{"median":14.2,"n":3,"p25":11.3,"p75":21.3},"Series C":{"median":3.0,"n":9,"p25":2.6,"p75":11.1},"Series D":{"median":11.6,"n":3,"p25":6.7,"p75":22.3},"Series E":{"median":5.3,"n":3,"p25":3.3,"p75":13.3},"Series F":{"median":1.2,"n":3,"p25":1.2,"p75":12.2}},"Healthcare":{"Angel":{"median":15.8,"n":1,"p25":15.8,"p75":15.8},"Seed":{"median":21.0,"n":6,"p25":11.9,"p75":44.3},"Series A":{"median":23.2,"n":3,"p25":20.6,"p75":28.0},"Series B":{"median":27.0,"n":1,"p25":27.0,"p75":27.0},"Series C":{"median":11.7,"n":1,"p25":11.7,"p75":11.7},"Series E":{"median":7.0,"n":1,"p25":7.0,"p75":7.0}},"High Tech":{"Angel":{"median":6.2,"n":4,"p25":4.5,"p75":7.0},"Seed":{"median":21.6,"n":17,"p25":11.5,"p75":79.2},"Series A":{"median":16.3,"n":2,"p25":11.6,"p75":21.0},"Series B":{"median":5.2,"n":6,"p25":3.3,"p75":11.5},"Series C":{"median":18.5,"n":2,"p25":13.8,"p75":23.1},"Series D":{"median":14.6,"n":5,"p25":12.8,"p75":16.3},"Series E":{"median":24.7,"n":2,"p25":24.3,"p75":25.1},"Series F":{"median":3.8,"n":1,"p25":3.8,"p75":3.8}},"Industrial Goods and Manufacturing":{"Angel":{"median":8.0,"n":1,"p25":8.0,"p75":8.0},"Seed":{"median":5.0,"n":1,"p25":5.0,"p75":5.0},"Series A":{"median":3.0,"n":1,"p25":3.0,"p75":3.0},"Series B":{"median":3.0,"n":1,"p25":3.0,"p75":3.0},"Series C":{"median":3.0,"n":1,"p25":3.0,"p75":3.0},"Series D":{"median":3.0,"n":1,"p25":3.0,"p75":3.0}},"Life Sciences":{"Angel":{"median":20.0,"n":1,"p25":20.0,"p75":20.0},"Seed":{"median":20.8,"n":2,"p25":13.0,"p75":28.5},"Series A":{"median":15.0,"n":1,"p25":15.0,"p75":15.0},"Series B":{"median":12.0,"n":1,"p25":12.0,"p75":12.0},"Series C":{"median":10.0,"n":1,"p25":10.0,"p75":10.0},"Series E":{"median":8.0,"n":1,"p25":8.0,"p75":8.0}},"Media & Entertainment":{"Angel":{"median":12.09,"n":1,"p25":12.09,"p75":12.09},"Seed":{"median":14.09,"n":1,"p25":14.09,"p75":14.09},"Series A":{"median":10.2,"n":1,"p25":10.2,"p75":10.2},"Series B":{"median":7.72,"n":1,"p25":7.72,"p75":7.72},"Series C":{"median":6.96,"n":1,"p25":6.96,"p75":6.96},"Series D":{"median":5.28,"n":1,"p25":5.28,"p75":5.28},"Series E":{"median":6.39,"n":1,"p25":6.39,"p75":6.39},"Series F":{"median":5.27,"n":1,"p25":5.27,"p75":5.27},"Series G":{"median":20.3,"n":1,"p25":20.3,"p75":20.3}},"Native AI / GenAI":{"Angel":{"median":12.7,"n":1,"p25":12.7,"p75":12.7},"Seed":{"median":12.3,"n":10,"p25":7.8,"p75":43.2},"Series A":{"median":13.6,"n":9,"p25":10.8,"p75":31.0},"Series B":{"median":29.0,"n":2,"p25":28.0,"p75":30.1},"Series C":{"median":40.1,"n":4,"p25":32.0,"p75":62.9},"Series D":{"median":40.5,"n":1,"p25":40.5,"p75":40.5},"Series E":{"median":25.5,"n":1,"p25":25.5,"p75":25.5},"Series G":{"median":25.8,"n":2,"p25":23.0,"p75":28.6}},"Real Estate and Construction":{"Angel":{"median":10.0,"n":1,"p25":10.0,"p75":10.0},"Seed":{"median":8.0,"n":2,"p25":44.2,"p75":70.6},"Series A":{"median":6.0,"n":1,"p25":6.0,"p75":6.0},"Series B":{"median":4.0,"n":1,"p25":4.0,"p75":4.0},"Series C":{"median":2.0,"n":1,"p25":2.0,"p75":2.0},"Series D":{"median":2.0,"n":1,"p25":2.0,"p75":2.0},"Series E":{"median":-2.0,"n":1,"p25":-2.0,"p75":-2.0}},"Real Estate and Construction Tech":{"Angel":{"median":20.0,"n":1,"p25":20.0,"p75":20.0},"Seed":{"median":20.0,"n":3,"p25":25.0,"p75":50.4},"Series A":{"median":13.6,"n":1,"p25":13.6,"p75":13.6},"Series F":{"median":1.3,"n":1,"p25":1.3,"p75":1.3}},"Retail":{"Angel":{"median":10.0,"n":2,"p25":0.7,"p75":0.9},"Seed":{"median":6.9,"n":8,"p25":4.9,"p75":22.4},"Series A":{"median":5.0,"n":3,"p25":18.7,"p75":46.3},"Series B":{"median":3.9,"n":3,"p25":2.4,"p75":5.5},"Series C":{"median":3.0,"n":1,"p25":3.0,"p75":3.0},"Series D":{"median":3.0,"n":3,"p25":7.0,"p75":10.9},"Series E":{"median":1.4,"n":1,"p25":1.4,"p75":1.4}},"Telecom":{"Angel":{"median":10.0,"n":1,"p25":10.0,"p75":10.0},"Seed":{"median":8.0,"n":1,"p25":8.0,"p75":8.0},"Series A":{"median":6.0,"n":1,"p25":6.0,"p75":6.0},"Series B":{"median":5.0,"n":1,"p25":5.0,"p75":5.0},"Series C":{"median":4.0,"n":1,"p25":4.0,"p75":4.0}},"Travel and Hospitality Tech":{"Angel":{"median":21.2,"n":1,"p25":21.2,"p75":21.2},"Seed":{"median":15.0,"n":1,"p25":15.0,"p75":15.0},"Series A":{"median":8.8,"n":1,"p25":8.8,"p75":8.8},"Series B":{"median":2.6,"n":1,"p25":2.6,"p75":2.6},"Series C":{"median":2.6,"n":1,"p25":2.6,"p75":2.6},"Series D":{"median":2.6,"n":1,"p25":2.6,"p75":2.6}},"All Industries":{"Angel":{"median":10.0,"n":69,"p25":7.1,"p75":11.85},"Seed":{"median":12.65,"n":251,"p25":7.2,"p75":29.25},"Series A":{"median":7.6,"n":102,"p25":6.0,"p75":10.9},"Series B":{"median":5.2,"n":62,"p25":4.5,"p75":8.0},"Series C":{"median":5.0,"n":54,"p25":4.7,"p75":6.6},"Series D":{"median":5.0,"n":45,"p25":5.28,"p75":7.1},"Series E":{"median":6.6,"n":30,"p25":6.39,"p75":7.0},"Series F":{"median":3.8,"n":13,"p25":3.8,"p75":5.27},"Series G":{"median":19.55,"n":5,"p25":16.45,"p75":20.3},"Series H":{"median":15.2,"n":3,"p25":11.1,"p75":15.2},"Series I":{"median":4.45,"n":2,"p25":4.45,"p75":4.45}}};
+
+const ROUNDS_ORDER = ['Angel','Seed','Series A','Series B','Series C','Series D','Series E','Series F','Series G','Series H','Series I'];
+
+// ══════════════════════════════════════════
+// POPULATE INDUSTRY DROPDOWN
+// ══════════════════════════════════════════
+(function populateIndustries() {
+  const sel = document.getElementById('industry');
+  const industries = Object.keys(DATA).filter(k => k !== 'All Industries').sort();
+  industries.forEach(ind => {
+    const opt = document.createElement('option');
+    opt.value = ind;
+    opt.textContent = ind;
+    sel.appendChild(opt);
+  });
+})();
+
+// ══════════════════════════════════════════
+// FORMATTING HELPERS
+// ══════════════════════════════════════════
+function formatMoney(val) {
+  if (val === null || val === undefined || isNaN(val)) return '—';
+  const abs = Math.abs(Math.round(val));
+  if (abs >= 1e9) return '$' + (val / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+  if (abs >= 1e6) return '$' + (val / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (abs >= 1e3) return '$' + (val / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  return '$' + val.toFixed(0);
+}
+
+function formatMultiple(val) {
+  if (val === null || val === undefined) return '—';
+  return val.toFixed(1) + 'x';
+}
+
+function formatNumberInput(str) {
+  const digits = str.replace(/[^\d]/g, '');
+  if (!digits) return '';
+  return Number(digits).toLocaleString('en-US');
+}
+
+function parseRevenue(str) {
+  const digits = str.replace(/[^\d]/g, '');
+  return digits ? Number(digits) : null;
+}
+
+function formatPct(val) {
+  return Math.round(val * 100) + '%';
+}
+
+// ══════════════════════════════════════════
+// INPUT BINDINGS
+// ══════════════════════════════════════════
+const revenueInput = document.getElementById('revenue');
+const revenueNextInput = document.getElementById('revenue-next');
+const saasSlider = document.getElementById('saas-pct');
+const saasDisplay = document.getElementById('saas-value-display');
+
+function attachFormatting(el) {
+  el.addEventListener('input', function() {
+    const pos = this.selectionStart;
+    const oldLen = this.value.length;
+    this.value = formatNumberInput(this.value);
+    const newLen = this.value.length;
+    const newPos = Math.max(0, pos + (newLen - oldLen));
+    this.setSelectionRange(newPos, newPos);
+    calculate();
+  });
+}
+attachFormatting(revenueInput);
+attachFormatting(revenueNextInput);
+
+document.getElementById('industry').addEventListener('change', calculate);
+document.getElementById('round').addEventListener('change', calculate);
+saasSlider.addEventListener('input', function() {
+  saasDisplay.textContent = this.value + '%';
+  calculate();
+});
+
+// ══════════════════════════════════════════
+// CALCULATION ENGINE
+// ══════════════════════════════════════════
+const DISCOUNT = 0.40;
+const NON_SAAS_DISCOUNT = 0.30;
+const GROWTH_PREMIUM = 0.20;
+const GROWTH_THRESHOLD = 0.50;
+const FORWARD_ONLY_ROUNDS = ['Seed', 'Angel'];
+const GROWTH_PREMIUM_ROUNDS = ['Series A', 'Series B', 'Series C+'];
+
+function applyMultiple(revenue, multiple, saasPct) {
+  const saasShare = saasPct * revenue * multiple;
+  const nonSaasShare = (1 - saasPct) * revenue * (1 - NON_SAAS_DISCOUNT) * multiple;
+  return saasShare + nonSaasShare;
+}
+
+// Resolve round to data key: Series C+ maps to Series C in the data
+function resolveRoundData(industry, round) {
+  const dataRound = round === 'Series C+' ? 'Series C' : round;
+  if (DATA[industry] && DATA[industry][dataRound]) return { d: DATA[industry][dataRound], fallback: false };
+  if (DATA['All Industries'] && DATA['All Industries'][dataRound]) return { d: DATA['All Industries'][dataRound], fallback: true };
+  return { d: null, fallback: true };
+}
+
+function calculate() {
+  const industry = document.getElementById('industry').value;
+  const round = document.getElementById('round').value;
+  const revenueCurrent = parseRevenue(revenueInput.value);
+  const revenueNext = parseRevenue(revenueNextInput.value);
+  const saasPct = parseInt(saasSlider.value) / 100;
+  const isSeedOrAngel = FORWARD_ONLY_ROUNDS.includes(round);
+
+  if (!industry || !round) { showEmptyState(); return; }
+  if (isSeedOrAngel && (!revenueNext || revenueNext <= 0)) { showEmptyState(); return; }
+  if (!isSeedOrAngel && (!revenueCurrent || revenueCurrent <= 0) && (!revenueNext || revenueNext <= 0)) { showEmptyState(); return; }
+
+  const { d, fallback: isFallback } = resolveRoundData(industry, round);
+  if (!d) { showEmptyState(); return; }
+
+  let median = d.median;
+  let p25 = d.p25;
+  let p75 = d.p75;
+  const n = d.n;
+
+  // Growth premium: for Series A+ rounds, if expected TTM growth > 50%, add 20% to multiple
+  let hasGrowthPremium = false;
+  if (GROWTH_PREMIUM_ROUNDS.includes(round) && revenueCurrent > 0 && revenueNext > 0) {
+    const growth = (revenueNext - revenueCurrent) / revenueCurrent;
+    if (growth > GROWTH_THRESHOLD) {
+      hasGrowthPremium = true;
+      median = median * (1 + GROWTH_PREMIUM);
+      p25 = p25 * (1 + GROWTH_PREMIUM);
+      p75 = p75 * (1 + GROWTH_PREMIUM);
+    }
+  }
+
+  let valuation, valLow, valHigh;
+  let vCurrent = null, vForward = null;
+  let vCurrentSaas = null, vCurrentNonSaas = null;
+  let vForwardSaas = null, vForwardNonSaas = null;
+  let method = '';
+
+  if (revenueCurrent && revenueCurrent > 0) {
+    vCurrentSaas = saasPct * revenueCurrent * median;
+    vCurrentNonSaas = (1 - saasPct) * revenueCurrent * (1 - NON_SAAS_DISCOUNT) * median;
+    vCurrent = vCurrentSaas + vCurrentNonSaas;
+  }
+  if (revenueNext && revenueNext > 0) {
+    vForwardSaas = saasPct * revenueNext * (1 - DISCOUNT) * median;
+    vForwardNonSaas = (1 - saasPct) * revenueNext * (1 - DISCOUNT) * (1 - NON_SAAS_DISCOUNT) * median;
+    vForward = vForwardSaas + vForwardNonSaas;
+  }
+
+  if (isSeedOrAngel) {
+    valuation = vForward;
+    valLow = applyMultiple(revenueNext, p25, saasPct) * (1 - DISCOUNT);
+    valHigh = applyMultiple(revenueNext, p75, saasPct) * (1 - DISCOUNT);
+    method = 'forward';
+  } else if (vCurrent !== null && vForward !== null) {
+    valuation = (vCurrent + vForward) / 2;
+    valLow = (applyMultiple(revenueCurrent, p25, saasPct) + applyMultiple(revenueNext, p25, saasPct) * (1 - DISCOUNT)) / 2;
+    valHigh = (applyMultiple(revenueCurrent, p75, saasPct) + applyMultiple(revenueNext, p75, saasPct) * (1 - DISCOUNT)) / 2;
+    method = 'blended';
+  } else if (vCurrent !== null) {
+    valuation = vCurrent;
+    valLow = applyMultiple(revenueCurrent, p25, saasPct);
+    valHigh = applyMultiple(revenueCurrent, p75, saasPct);
+    method = 'current';
+  } else {
+    valuation = vForward;
+    valLow = applyMultiple(revenueNext, p25, saasPct) * (1 - DISCOUNT);
+    valHigh = applyMultiple(revenueNext, p75, saasPct) * (1 - DISCOUNT);
+    method = 'forward';
+  }
+
+  renderResults({
+    industry, round,
+    revenueCurrent, revenueNext,
+    saasPct,
+    valuation, valLow, valHigh,
+    vCurrent, vForward,
+    vCurrentSaas, vCurrentNonSaas,
+    vForwardSaas, vForwardNonSaas,
+    median, p25, p75, n,
+    isFallback, method,
+    hasGrowthPremium
+  });
+}
+
+function showEmptyState() {
+  const area = document.getElementById('results-area');
+  area.innerHTML = `
+    <div class="card" id="empty-state">
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h3>Configure your inputs</h3>
+        <p>Select an industry, funding round, and enter your revenue figures to see your estimated valuation.</p>
+      </div>
+    </div>`;
+}
+
+function renderResults(r) {
+  const area = document.getElementById('results-area');
+
+  const rangeSpan = r.valHigh - r.valLow;
+  let markerPct = 50;
+  if (rangeSpan > 0) markerPct = Math.min(100, Math.max(0, ((r.valuation - r.valLow) / rangeSpan) * 100));
+
+  let html = '';
+
+  html += `
+    <div class="card valuation-card animate-in">
+      <div class="valuation-topline">
+        <span class="valuation-label">Estimated Valuation</span>
+      </div>
+      <div class="valuation-amount">${formatMoney(r.valuation)}</div>
+      <div class="valuation-meta">
+        <span class="meta-chip"><span class="dot green"></span>${r.industry}</span>
+        <span class="meta-chip">${r.round}</span>
+      </div>
+
+      <div class="range-section">
+        <div class="range-header">
+          <span class="range-label">Valuation Range</span>
+          <span class="range-values">${formatMoney(r.valLow)} — ${formatMoney(r.valHigh)}</span>
+        </div>
+        <div class="range-bar-track">
+          <div class="range-bar-fill" style="left:0%;width:100%"></div>
+          <div class="range-bar-marker" style="left:${markerPct}%"></div>
+        </div>
+      </div>`;
+
+  html += `</div>`;
+  area.innerHTML = html;
+}
+
+// Initialize
+showEmptyState();
+</script>
+
+</body>
+</html>
