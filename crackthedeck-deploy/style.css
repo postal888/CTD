@@ -2919,3 +2919,39 @@ a.support__info-value:hover {
 #paypal-button-container {
   min-height: 45px;
 }
+
+/* ===== VALUATION CALCULATOR (homepage promo) ===== */
+.valuation-cta {
+  padding: clamp(var(--space-8), 5vw, var(--space-12)) var(--space-6);
+  background: linear-gradient(135deg, rgba(0, 229, 195, 0.08) 0%, rgba(0, 230, 118, 0.05) 50%, transparent 100%);
+  border-block: 1px solid var(--color-border);
+}
+.valuation-cta__inner {
+  max-width: var(--content-wide);
+  margin: 0 auto;
+  text-align: center;
+}
+.valuation-cta__badge {
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  margin-bottom: var(--space-3);
+}
+.valuation-cta__title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-3);
+  line-height: 1.15;
+}
+.valuation-cta__text {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  max-width: 36rem;
+  margin: 0 auto var(--space-6);
+  line-height: 1.55;
+}
