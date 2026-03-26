@@ -1,11 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) - GA4 + Google Ads -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DK28B4H8WX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-DK28B4H8WX");
+  gtag("config", "AW-18023387647");
+</script>
 <!--
-   _
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
 -->
 
-<!--  -->
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
 <meta name="generator" content="Perplexity Computer">
 <meta name="author" content="Perplexity Computer">
 <meta property="og:see_also" content="https://www.perplexity.ai/computer">
@@ -232,74 +248,26 @@ body::after {
   flex: 1;
 }
 
-/* Flex row + top alignment. Two common theme bugs:
-   (1) .calc-grid > .card { margin-top } — only the left direct .card gets margin.
-   (2) align-items: center on the row — shorter left column centers vs taller right → gap above left.
-   Use id + per-item align-self !important; inline styles on markup as last resort vs CMS. */
-.calc-grid,
-#ctd-valuation-grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: flex-start !important;
-  align-content: flex-start !important;
-  justify-content: flex-start !important;
+.calc-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
   gap: 24px;
-  width: 100%;
+  align-items: start;
 }
 
-/* Each flex item: start on cross-axis (beats parent align-items:center from theme) */
-#ctd-valuation-grid > .input-panel,
-#ctd-valuation-grid > .results-area {
-  align-self: flex-start !important;
-}
-
-.calc-grid > *,
-#ctd-valuation-grid > * {
-  margin: 0 !important;
-  margin-block-start: 0 !important;
-  margin-block-end: 0 !important;
-  min-width: 0;
-}
-
-/* Beats theme rules like .main .calc-grid > .card { margin-top: 6rem } (only targets left card) */
-.calc-grid > .card.input-panel,
-#ctd-valuation-grid > .card.input-panel {
-  margin-top: 0 !important;
-  margin-block-start: 0 !important;
-  top: auto !important;
-}
-
-.input-panel {
-  flex: 0 0 auto;
-  align-self: flex-start !important;
-  width: clamp(280px, 32vw, 380px);
-  max-width: 380px;
-}
-
-.results-area {
-  flex: 1 1 0%;
-  min-width: 0;
-  align-self: flex-start !important;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.card.input-panel {
+  position: sticky;
+  top: 80px;
 }
 
 @media (max-width: 840px) {
   .calc-grid {
-    flex-direction: column;
-    flex-wrap: wrap;
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
-  .input-panel {
-    position: static !important;
-    top: auto !important;
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-  }
-  .results-area {
-    width: 100%;
+  .card.input-panel {
+    position: static;
+    top: auto;
   }
 }
 
@@ -443,16 +411,21 @@ select option {
 /* ══════════════════════════════════════════
    OUTPUT / RESULT AREA
    ══════════════════════════════════════════ */
+.results-area {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
 /* Empty state */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  min-height: 240px;
+  justify-content: center;
+  min-height: 300px;
   text-align: center;
-  padding: 4px 20px 32px;
+  padding: 40px 20px;
 }
 
 .empty-state-icon {
@@ -488,9 +461,9 @@ select option {
   max-width: 280px;
 }
 
-/* Valuation card — same vertical padding as .card (28px) so top labels line up with Parameters */
+/* Valuation card */
 .valuation-card {
-  padding: 28px;
+  padding: 32px;
   background: var(--card);
   border: 1px solid rgba(0,229,195,0.12);
   position: relative;
@@ -906,10 +879,9 @@ select option {
 /* ══════════════════════════════════════════
    ANIMATIONS
    ══════════════════════════════════════════ */
-/* Opacity only — translateY made the results card look shifted vs the left column */
 @keyframes fadeInUp {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-in {
@@ -1073,10 +1045,10 @@ select option {
   <!-- MAIN -->
   <main class="main-content">
     <div class="container">
-      <div class="calc-grid" id="ctd-valuation-grid" style="align-items:flex-start;align-content:flex-start;justify-content:flex-start;">
+      <div class="calc-grid">
 
         <!-- LEFT: Inputs -->
-        <div class="card card-glow input-panel" style="align-self:flex-start;">
+        <div class="card card-glow input-panel">
           <div class="card-title">Parameters</div>
 
           <div class="input-group">
@@ -1129,7 +1101,7 @@ select option {
         </div>
 
         <!-- RIGHT: Results -->
-        <div class="results-area" id="results-area" style="align-self:flex-start;">
+        <div class="results-area" id="results-area">
           <!-- Empty state -->
           <div class="card" id="empty-state">
             <div class="empty-state">
