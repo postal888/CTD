@@ -1229,12 +1229,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
           // 4. purchase — Stripe payment confirmed
           var purchasePrices = { basic: 19, pro: 49, expert: 499 };
+          var stripeTxId = sessionId || token || '';
           ctdTrack('purchase', {
             currency: 'USD',
             value: purchasePrices[plan] || 0,
-            transaction_id: sessionId || token || '',
+            transaction_id: stripeTxId,
             plan: plan,
             payment_method: 'stripe'
+          });
+          // Google Ads conversion
+          gtag('event', 'conversion', {
+            'send_to': 'AW-18023387647/U5nmCMbd044cEP-jnJJD',
+            'value': purchasePrices[plan] || 0,
+            'currency': 'USD',
+            'transaction_id': stripeTxId
           });
           if (plan === 'pro' || plan === 'expert') {
             // Pro/Expert: human review, show "coming in 24 hours"
@@ -1425,12 +1433,20 @@ function _doRenderPayPalButtons(container) {
           if (result.status === 'success') {
             // purchase for PayPal
             var ppPurchasePrices = { basic: 19, pro: 49, expert: 499 };
+            var ppTxId = data.orderID || '';
             ctdTrack('purchase', {
               currency: 'USD',
               value: ppPurchasePrices[result.plan] || 0,
-              transaction_id: data.orderID || '',
+              transaction_id: ppTxId,
               plan: result.plan || 'basic',
               payment_method: 'paypal'
+            });
+            // Google Ads conversion
+            gtag('event', 'conversion', {
+              'send_to': 'AW-18023387647/U5nmCMbd044cEP-jnJJD',
+              'value': ppPurchasePrices[result.plan] || 0,
+              'currency': 'USD',
+              'transaction_id': ppTxId
             });
             _startPayPalPolling(result.token, result.plan, result.email);
           } else {
